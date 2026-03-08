@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+
 
 class User(models.Model):
     # User is Either Patient Or Doctor
@@ -20,6 +22,15 @@ class User(models.Model):
     
     def __str__(self):
         return f"{self.name} : {self.role}, DOB : {self.date_of_birth} "
+
+    def clean(self):
+        # User cant be own parent
+        if self.parentID and self.parentID.userID == self.userID:
+            raise ValidationError("A user cannot be their own parent.")
+        
+        # Prevent a doctor from being set as a parent (Doctor would need to have seperate user account if they wanted to create a child)
+        if self.parentID and self.parentID.role != 'patient':
+            raise ValidationError("Only patients can be set as a parent (guardian).") 
     
 
 class Appointment(models.Model):
@@ -39,8 +50,17 @@ class Appointment(models.Model):
     doctorID = models.ForeignKey(User, on_delete=models.CASCADE, related_name='doctor_appointments')
     appointmentReason = models.CharField(max_length=132)
     visitType = models.CharField(max_length=20, choices=visitTypes)
-    appointmentDate = models.DateTimeField()
+    appointmentDate = models.DateField()
+    appointmentTime = models.TimeField(default='00:00:00')
     status = models.CharField(max_length=20, choices=statusTypes, default='booked')
+
+    def clean(self):
+        # Patient cant be doctor
+        if self.doctorID and self.doctorID.role != 'doctor':
+            raise ValidationError("Only doctors can be assigned as the doctor for an appointment.")
+        # Doctor cannt get an appointment
+        if self.patientID and self.patientID.role != 'patient':
+            raise ValidationError("Only patients can have an appointment.")
 
     def __str__(self):
         return f"Appointment ID : {self.appointmentID}, Patient : {self.patientID}"
@@ -127,3 +147,32 @@ class Medication(models.Model):
 
     def __str__(self):
         return f"Medication ID : {self.medicationID}, Medication : {self.name}, Patient : {self.patientID}"
+
+class DoctorSchedule(models.Model):
+
+    DAYS_OF_WEEK = [
+        (0, 'Monday'),
+        (1, 'Tuesday'),
+        (2, 'Wednesday'),
+        (3, 'Thursday'),
+        (4, 'Friday'),
+        (5, 'Saturday'),
+        (6, 'Sunday'),
+    ]
+
+    doctorID = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schedules')
+    day = models.IntegerField(choices=DAYS_OF_WEEK)
+    startTime = models.TimeField()
+    endTime = models.TimeField()
+    appointmentDuration = models.IntegerField(default=30) 
+
+    def clean(self):
+        # Patient cant be assigned a schedule
+        if self.doctorID and self.doctorID.role != 'doctor':
+            raise ValidationError("Only doctors can have a schedule.")
+
+    class Meta:
+        unique_together = ('doctorID', 'day') # only one schedule a day
+
+    def __str__(self):
+        return f"{self.doctorID.name} Schedule - {self.get_day_display()}"
