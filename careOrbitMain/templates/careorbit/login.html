@@ -1,0 +1,51 @@
+{% extends 'careorbit/base.html' %}
+{% load static %}
+
+{% block title_block %}
+    CareOrbit - Login
+{% endblock %}
+
+{% block body_block %}
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <h2>Login</h2>
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your Email"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                >
+                <a href="{% url 'forgot_password' %}" class="forgot-link">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn-login">Login</button>
+
+        </form>
+
+        <p class="signup-prompt">
+            Don't have an account? <a href="{% url 'signup' %}">Sign Up</a>
+        </p>
+
+    </div>
+</div>
+
+{% endblock %}

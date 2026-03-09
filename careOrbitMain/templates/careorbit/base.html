@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+
+        <title>
+            {% block title_block %}
+                CareOrbit
+            {% endblock %}
+        </title>
+
+        
+    </head>
+
+    <body>
+
+        <nav>
+            <ul>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'records' %}">Records</a></li>
+                    <li><a href="{% url 'medications' %}">Medications</a></li>
+                    <li><a href="{% url 'appointments' %}">Appointments</a></li>
+                    <li><a href="{% url 'dependents' %}">Dependents</a></li>
+                {% else %}
+                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <div class="container">
+            {% block body_block %}
+            {% endblock %}
+        </div>
+
+        <footer>
+            <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+            <a href="{% url 'terms_of_service' %}">Terms</a>
+            <a href="{% url 'contact_us' %}">Contact</a>
+        </footer>
+
+    </body>
+</html>
