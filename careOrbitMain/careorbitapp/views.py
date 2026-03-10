@@ -6,13 +6,17 @@ from .models import User, Appointment,  Visit, TestResult, DoctorNote, Record, M
 
 
 def login(request):
-    return HttpResponse("Login page")
+    if request.method == 'POST':
+        pass
+    return render(request, "careorbit/login.html")
+
+
 
 def signup(request):
-    return HttpResponse("Signup page")
+    return render(request, 'careorbit/signup.html')
 
 def forgot_password(request):
-    return HttpResponse("Forgot password page")
+    return render(request, 'careorbit/forgot_password.html')
 
 def dashboard(request):
     patient = get_current_patient()#TODO: auth

@@ -1,0 +1,11 @@
+
+
+nav {
+    background-color: #2d2f5e;
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+

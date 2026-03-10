@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Appointment, Visit, TestResult, DoctorNote, Record, Medication
+from .models import User, Appointment, Visit, TestResult, DoctorNote, Record, Medication,DoctorSchedule
 
 # All List Displays Below Are Shown Within Admin When Record Hasnt Been Clicked on Within DB
 class UserAdmin(admin.ModelAdmin):
@@ -21,6 +21,7 @@ class TestResultAdmin(admin.ModelAdmin):
     list_display = ('testName', 'patientID', 'resultDate')
 
 
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Appointment, AppointmentAdmin)
 admin.site.register(Visit, VisitAdmin)
@@ -28,3 +29,4 @@ admin.site.register(Medication, MedicationAdmin)
 admin.site.register(Record, RecordAdmin)
 admin.site.register(TestResult,TestResultAdmin)
 admin.site.register(DoctorNote)
+admin.site.register(DoctorSchedule)
