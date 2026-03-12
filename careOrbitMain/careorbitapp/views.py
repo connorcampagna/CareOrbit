@@ -2,17 +2,50 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
 from django.shortcuts import render, redirect
+from django.contrib.auth.hashers import make_password, check_password
 from .models import User, Appointment,  Visit, TestResult, DoctorNote, Record, Medication
 
 
 def login(request):
     if request.method == 'POST':
-        pass
-    return render(request, "careorbit/login.html")
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        try:
+            user = User.objects.get(email=email)
+            if check_password(password, user.passwordHash):
+                request.session['user_id'] = user.userID
+                return redirect('/dashboard/')
+        except User.DoesNotExist:
+            pass
+        return render(request, 'careorbit/login.html', {'error': 'Incorrect email or password.'})
+    return render(request, 'careorbit/login.html')
 
+
+
+def logout(request):
+    request.session.flush()
+    return redirect('/login/')
 
 
 def signup(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        nhs = request.POST.get('nhsNumber')
+        dob = request.POST.get('date_of_birth')
+        phone = request.POST.get('phoneNumber')
+        user = User.objects.create(
+            name=name,
+            email=email,
+            passwordHash=make_password(password),
+            nhsNumber=nhs,
+            date_of_birth=dob,
+            phoneNumber=phone,
+            role='patient',
+        )
+        request.session['user_id'] = user.userID
+        return redirect('/dashboard/')
     return render(request, 'careorbit/signup.html')
 
 def forgot_password(request):
