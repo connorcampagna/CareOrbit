@@ -151,13 +151,13 @@ def dependents(request):
     return render(request, "careorbit/dependents.html", context)
 
 def privacy_policy(request):
-    return HttpResponse("Privacy Policy")
+    return render(request, "careorbit/private-policy.html")
 
 def terms_of_service(request):
     return HttpResponse("Terms of Service")
 
 def contact_us(request):
-    return HttpResponse("Contact Us")
+    return render(request, "careorbit/contact_us.html")
 
 def get_current_patient():#TODO: after authentication is implemented, this function should return the currently logged in patient
     return User.objects.filter(role='patient').first()
