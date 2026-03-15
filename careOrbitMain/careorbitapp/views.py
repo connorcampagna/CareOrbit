@@ -187,7 +187,7 @@ def privacy_policy(request):
     return render(request, "careorbit/private-policy.html")
 
 def terms_of_service(request):
-    return HttpResponse("Terms of Service")
+    return render(request, "careorbit/terms_of_service.html")
 
 def contact_us(request):
     return render(request, "careorbit/contact_us.html")

@@ -6,7 +6,95 @@
 {% endblock %}
 
 {% block body_block %}
-<div class="dashboard-wrapper">
-    <h2>Dashboard</h2>
-    
+
+<div class="dashboard-greeting">
+    <h2>Good morning, {{ user.first_name }} ✏️</h2>
 </div>
+
+<div class="dashboard-layout">
+
+    <div class="dashboard-left">
+
+        <section class="dashboard-section">
+            <h3>Upcoming Appointments</h3>
+
+            <div class="appointment-card">
+                <div class="appointment-info">
+                    <strong>Dr. Jane Smith</strong>
+                    <p>General Checkup · Mon 5 Oct, 10:30am</p>
+                </div>
+                <span class="badge badge-confirmed">CONFIRMED</span>
+            </div>
+
+            <div class="appointment-card">
+                <div class="appointment-info">
+                    <strong>Dr. John Brown</strong>
+                    <p>Dental Checkup · Mon 29 Oct, 10:30am</p>
+                </div>
+                <span class="badge badge-pending">PENDING</span>
+            </div>
+
+        </section>
+
+        <section class="dashboard-section">
+            <h3>Your Updates</h3>
+
+            <div class="update-card update-warning">
+                <span class="update-icon">⚠️</span>
+                <div class="update-info">
+                    <strong>Flu Vaccine Due</strong>
+                    <p>Recommended by 15 Mar 2026</p>
+                    <a href="{% url 'book_appointment' %}">Click to Book</a>
+                </div>
+            </div>
+
+            <div class="update-card update-success">
+                <span class="update-icon">✅</span>
+                <div class="update-info">
+                    <strong>COVID Booster</strong>
+                    <p>Completed · Jan 2026</p>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+
+    <div class="dashboard-right">
+
+        <section class="dashboard-section">
+            <h3>Quick Access</h3>
+
+            <div class="quick-access-grid">
+                <a href="{% url 'book_appointment' %}" class="quick-access-card">
+                    <span>📅</span>
+                    <p>Schedule an Appointment</p>
+                </a>
+                <a href="{% url 'dependents' %}" class="quick-access-card">
+                    <span>👥</span>
+                    <p>Dependents</p>
+                </a>
+                <a href="{% url 'test_results' %}" class="quick-access-card">
+                    <span>🧪</span>
+                    <p>Test Results</p>
+                </a>
+                <a href="{% url 'medications' %}" class="quick-access-card">
+                    <span>💊</span>
+                    <p>Medications</p>
+                </a>
+                <a href="{% url 'visit_history' %}" class="quick-access-card">
+                    <span>🤝</span>
+                    <p>Visits</p>
+                </a>
+                <a href="{% url 'general_documents' %}" class="quick-access-card">
+                    <span>📄</span>
+                    <p>Documents</p>
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock %}

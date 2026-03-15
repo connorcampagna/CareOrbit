@@ -1,35 +1,40 @@
 <!DOCTYPE html>
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-
 <html>
     <head>
+        {% load static %}
         <meta charset="UTF-8">
-
         <title>
             {% block title_block %}
                 CareOrbit
             {% endblock %}
         </title>
-
-        
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
     </head>
 
     <body>
 
         <nav>
-            <ul>
-                {% if user.is_authenticated %} 
-                    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                    <li><a href="{% url 'records' %}">Records</a></li>
-                    <li><a href="{% url 'medications' %}">Medications</a></li>
-                    <li><a href="{% url 'appointments' %}">Appointments</a></li>
-                    <li><a href="{% url 'dependents' %}">Dependents</a></li>
-                {% else %}
-                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
-                    <li><a href="{% url 'login' %}">Login</a></li>
+            <div class="nav-left">
+                <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}" class="nav-logo">CareOrbit</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'records' %}">Records</a>
+                    <a href="{% url 'medications' %}">Medications</a>
+                    <a href="{% url 'appointments' %}">Appointments</a>
+                    <a href="{% url 'dependents' %}">Dependents</a>
                 {% endif %}
-            </ul>
+            </div>
+            <div class="nav-right">
+                {% if user.is_authenticated %}
+                    <div class="nav-avatar">
+                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                    </div>
+                    <span class="nav-dropdown-arrow">▾</span>
+                {% else %}
+                    <a href="{% url 'signup' %}">Sign Up</a>
+                    <a href="{% url 'login' %}">Login</a>
+                {% endif %}
+            </div>
         </nav>
 
         <div class="container">
@@ -38,9 +43,12 @@
         </div>
 
         <footer>
-            <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
-            <a href="{% url 'terms_of_service' %}">Terms</a>
-            <a href="{% url 'contact_us' %}">Contact</a>
+            <span>© 2026 CareOrbit. All rights reserved.</span>
+            <div class="footer-links">
+                <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+                <a href="{% url 'terms_of_service' %}">Terms of Service</a>
+                <a href="{% url 'contact_us' %}">Contact Us</a>
+            </div>
         </footer>
 
     </body>
