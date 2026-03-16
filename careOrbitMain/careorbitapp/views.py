@@ -166,7 +166,7 @@ def medication_report(request):#TODO: auth
     return render(request, "careorbit/medication_report.html", context)
 
 def appointments(request):
-    return HttpResponse("Appointments")
+    return render(request, "careorbit/Appointments.html")
 
 def book_appointment(request):
     return render(request, "careorbit/book_appointment.html", context)
