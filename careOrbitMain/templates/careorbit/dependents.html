@@ -4,3 +4,56 @@
 {% block title_block %}
     CareOrbit - Dependents
 {% endblock %}
+
+{% block body_block %}
+
+<div class="dependent-header">
+    <div>
+        <h2>My Family</h2>
+        <p>Manage dependents linked to you account</p>
+    </div>
+    <button class="add-dependents-button" onclick="toggleAddForm()">+ Add Dependent</button>
+</div>
+
+<div class="dependents-list">
+    <!-- Might hardcode depndents as a place holder-->
+</div>
+
+<div class="add-dependent-form">
+    <h3>ADD NEW DEPENDENT</h3>
+    <form method="POST" action="{% url 'dependents' %}">
+        {% csrf_token %}
+
+        <div class="add-dependent-grid">
+            <div class="form-group">
+                <label>Parents Email</label>
+                <input type="email" name="parent_email" placeholder="janedoe@gmail.com">
+            </div>
+
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" name="dob" placeholder="DD / MM / YYYY">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="XXX-XXX-XXX">
+            </div>
+
+            <div class="form-group">
+                <label>Relationship</label>
+                <select name="relationship">
+                    <option value="">Son / Daughter / Other</option>
+                    <option value="son">Son</option>
+                    <option value="daughter">Daughter</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="add-dependent-actions">
+            <button type="submit" class="btn-link-account">Link Account</button>
+            <button type="button" class="btn-cancel" onclick="toggleAddForm()">Cancel</button>
+        </div>
+    </form>
+</div>
