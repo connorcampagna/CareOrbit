@@ -4,3 +4,155 @@
 {% block title_block %}
     CareOrbit - records
 {% endblock %}
+
+{% block body_block %}
+
+<div class="records-wrapper">
+
+   
+    <div class="records-tabs">
+        <button class="tab-btn tab-active" onclick="switchTab('test-results', this)">TEST RESULTS</button>
+        <button class="tab-btn" onclick="switchTab('visit-history', this)">VISIT HISTORY</button>
+        <button class="tab-btn" onclick="switchTab('clinical-notes', this)">CLINICAL NOTES</button>
+        <button class="tab-btn" onclick="switchTab('doctors-notes', this)">DOCTOR'S NOTES</button>
+    </div>
+
+    <div class="records-bar">
+        <p class="records-count" id="records-count">Showing: Test Results (4 records)</p>
+        <input type="text" id="search-input" placeholder="Search records..." onkeyup="filterRecords()" class="records-search">
+    </div>
+
+    <div class="tab-content" id="tab-test-results">
+        <div class="record-row">
+            <div class="record-info">
+                <strong>Full Blood Count (FBC)</strong>
+                <p>20 Jan 2026 · Dr. Jeff</p>
+            </div>
+            <div class="record-actions">
+                <button class="btn-view">View</button>
+                <button class="btn-download">↓ Download</button>
+            </div>
+        </div>
+        <div class="record-row">
+            <div class="record-info">
+                <strong>Lipid Panel</strong>
+                <p>5 Dec 2025 · Dr. Kutner </p>
+            </div>
+            <div class="record-actions">
+                <button class="btn-view">View</button>
+                <button class="btn-download">↓ Download</button>
+            </div>
+        </div>
+        <div class="record-row">
+            <div class="record-info">
+                <strong>Blood Test</strong>
+                <p>14 Nov 2025 · Dr. Mitchell</p>
+            </div>
+            <div class="record-actions">
+                <button class="btn-view">View</button>
+                <button class="btn-download">↓ Download</button>
+            </div>
+        </div>
+        <div class="record-row">
+            <div class="record-info">
+                <strong>Chest X-Ray Report</strong>
+                <p>2 Oct 2025 · Radiology</p>
+            </div>
+            <div class="record-actions">
+                <button class="btn-view">View</button>
+                <button class="btn-download">↓ Download</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="tab-content" id="tab-visit-history" style="display:none;">
+        <div class="record-row">
+            <div class="record-info">
+                <strong>General Checkup</strong>
+                <p>5 Oct 2025 · Dr. Wilson</p>
+            </div>
+            <div class="record-actions">
+                <button class="btn-view">View</button>
+                <button class="btn-download">↓ Download</button>
+            </div>
+        </div>
+        <div class="record-row">
+            <div class="record-info">
+                <strong>Dental Checkup</strong>
+                <p>29 Sep 2025 · Dr. Altman</p>
+            </div>
+            <div class="record-actions">
+                <button class="btn-view">View</button>
+                <button class="btn-download">↓ Download</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="tab-content" id="tab-doctors-notes" style="display:none;">
+        <div class="record-row">
+            <div class="record-info">
+                <strong>Post-Consultation Note</strong>
+                <p>20 Jan 2026 · Dr. Grey</p>
+            </div>
+            <div class="record-actions">
+                <button class="btn-view">View</button>
+                <button class="btn-download">↓ Download</button>
+            </div>
+        </div>
+        <div class="record-row">
+            <div class="record-info">
+                <strong>Referral Letter - Cardiology</strong>
+                <p>15 Nov 2025 · Dr. Yang</p>
+            </div>
+            <div class="record-actions">
+                <button class="btn-view">View</button>
+                <button class="btn-download">↓ Download</button>
+            </div>
+        </div>
+        <div class="record-row">
+            <div class="record-info">
+                <strong>Annual Review Notes</strong>
+                <p>2 Oct 2025 · Dr. Cuddy</p>
+            </div>
+            <div class="record-actions">
+                <button class="btn-view">View</button>
+                <button class="btn-download">↓ Download</button>
+            </div>
+        </div>
+    </div>
+
+        
+    <div class="tab-content" id="tab-general-documents" style="display:none;">
+        <div class="record-row">
+            <div class="record-info">
+                <strong>Sick note</strong>
+                <p>10 Jan 2026 · Dr. House</p>
+            </div>
+            <div class="record-actions">
+                <button class="btn-view">View</button>
+                <button class="btn-download">↓ Download</button>
+            </div>
+        </div>
+        <div class="record-row">
+            <div class="record-info">
+                <strong>Medical Exemption </strong>
+                <p>3 Dec 2025 · Dr. phil</p>
+            </div>
+            <div class="record-actions">
+                <button class="btn-view">View</button>
+                <button class="btn-download">↓ Download</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="records-footer-note">
+        <p>📌 Tabs switch between Test Results / Visit History / Doctor's Notes / General Documents</p>
+        <p>📌 Each row: View opens record viewer · Download saves as PDF</p>
+    </div>
+
+</div>
+
+{% endblock %}
