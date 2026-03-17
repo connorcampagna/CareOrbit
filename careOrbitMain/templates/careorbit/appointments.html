@@ -7,76 +7,34 @@
 
 {% block body_block %}
 
-<div class="appointment-layout">
+<div class="container">
+    <h2>Upcoming Appointments</h2>
 
-    <div class="appointment-form">
-        <h2><span class="section-bar"></span> Appointment Details</h2>
+    {% if appointments %}
+        <div class="appointments-list">
 
-        <form method="POST" action="{% url 'book_appointment' %}">
-            {% csrf_token %}
+            {% for appointment in appointments %}
+                <div class="appointment-card">
+                    <h3>{{ appointment.title }}</h3>
 
-            <div class="form-group">
-                <label>REASON FOR VISIT</label>
-                <select name="reason" id="reason" onchange="toggleOtherBox()">
-                    <option value="general">General Checkup</option>
-                    <option value="dental">Dental Checkup</option>
-                    <option value="followup">Follow Up</option>
-                    <option value="results">Test Results</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
+                    <p><strong>Date:</strong> {{ appointment.date }}</p>
+                    <p><strong>Time:</strong> {{ appointment.time }}</p>
+                    <p><strong>Doctor:</strong> {{ appointment.doctor }}</p>
+                    <p><strong>Location:</strong> {{ appointment.location }}</p>
 
-            <div class="form-group" id="other-box" style="display: none;">
-                <label>DESCRIBE YOUR VISIT</label>
-                <textarea name="other_description" rows="3" placeholder="Please describe your reason for visit..."></textarea>
-            </div>
+                    {% if appointment.notes %}
+                        <p><strong>Notes:</strong> {{ appointment.notes }}</p>
+                    {% endif %}
 
-            <div class="form-group">
-                <label>VISIT TYPE</label>
-                <div class="visit-type-group">
-                    <button type="button" class="visit-btn visit-btn-active" id="btn-inperson" onclick="selectVisitType('in-person')">
-                        👤 In-Person
-                    </button>
-                    <button type="button" class="visit-btn" id="btn-virtual" onclick="selectVisitType('virtual')">
-                        🖥 Virtual
-                    </button>
                 </div>
-                <input type="hidden" name="visit_type" id="visit_type" value="in-person">
-            </div>
+            {% endfor %}
 
-            <div class="form-group">
-                <label>PREFERRED DATE</label>
-                <input type="date" name="date" id="preferred-date" onchange="updateSlots()">
-            </div>
+        </div>
 
-            <div class="form-group">
-                <label>PREFERRED DOCTOR (OPTIONAL)</label>
-                <select name="doctor" id="preferred-doctor" onchange="updateSlots()">
-                    <option value="">No Preference</option>
-                    <option value="smith">Dr. Jane Smith - GP</option>
-                    <option value="brown">Dr. John Brown - Dentist</option>
-                    <option value="jones">Dr. Sarah Jones - Specialist</option>
-                </select>
-            </div>
-
-            <input type="hidden" name="selected_slot" id="selected_slot" value="">
-
-            <button type="submit" class="btn-confirm">Confirm Booking →</button>
-
-        </form>
-    </div>
-
-    <div class="appointment-slots">
-        <h2><span class="section-bar"></span> Available Slots</h2>
-        <p class="slots-hint" id="slots-hint">Select a date and doctor to see available slots.</p>
-
-        <div id="slots-container"></div>
-    </div>
+    {% else %}
+        <p>No upcoming appointments.</p>
+    {% endif %}
 
 </div>
-
-<script>
-    
-</script>
 
 {% endblock %}

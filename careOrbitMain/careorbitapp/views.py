@@ -151,7 +151,9 @@ def medications(request):
     return render(request, "careorbit/medications.html", context)
 
 def medication_refill(request):
-    return HttpResponse("Medication Refill")
+    patient = get_current_patient()  # TODO: auth
+    medications = Medication.objects.filter(patientID=patient)
+    return render(request, "careorbit/refill.html", {"medications": medications})
 
 def medication_report(request):#TODO: auth
     patient = get_current_patient()
@@ -163,7 +165,7 @@ def medication_report(request):#TODO: auth
         "medications": medications,
     }
 
-    return render(request, "careorbit/medication_report.html", context)
+    return render(request, "careorbit/report.html", context)
 
 def appointments(request):
     return render(request, "careorbit/Appointments.html")
