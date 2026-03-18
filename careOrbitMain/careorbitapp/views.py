@@ -52,6 +52,8 @@ def forgot_password(request):
     return render(request, 'careorbit/forgot_password.html')
 
 def dashboard(request):
+    if not request.session.get('user_id'):
+        return redirect('/login/')
     patient = get_current_patient()#TODO: auth
 
     recent_medications = Medication.objects.filter(patientID=patient).order_by("-prescribedAt")[:3]
