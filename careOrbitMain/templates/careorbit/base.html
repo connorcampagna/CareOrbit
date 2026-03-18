@@ -1,55 +1,58 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        {% load static %}
-        <meta charset="UTF-8">
-        <title>
-            {% block title_block %}
-                CareOrbit
-            {% endblock %}
-        </title>
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    </head>
 
-    <body>
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>
+        {% block title_block %}
+        CareOrbit
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 
-        <nav>
-            <div class="nav-left">
-                <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}" class="nav-logo">CareOrbit</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}">Dashboard</a>
-                    <a href="{% url 'records' %}">Records</a>
-                    <a href="{% url 'medications' %}">Medications</a>
-                    <a href="{% url 'appointments' %}">Appointments</a>
-                    <a href="{% url 'dependents' %}">Dependents</a>
-                {% endif %}
-            </div>
-            <div class="nav-right">
-                {% if user.is_authenticated %}
-                    <div class="nav-avatar">
-                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
-                    </div>
-                    <span class="nav-dropdown-arrow">▾</span>
-                {% else %}
-                    <a href="{% url 'signup' %}">Sign Up</a>
-                    <a href="{% url 'login' %}">Login</a>
-                {% endif %}
-            </div>
-        </nav>
+<body>
 
-        <div class="container">
-            {% block body_block %}
-            {% endblock %}
+    <nav>
+        <div class="nav-left">
+            <a href="{% if request.session.user_id %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}"
+                class="nav-logo">CareOrbit</a>
+            {% if request.session.user_id %}
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'records' %}">Records</a>
+            <a href="{% url 'medications' %}">Medications</a>
+            <a href="{% url 'appointments' %}">Appointments</a>
+            <a href="{% url 'dependents' %}">Dependents</a>
+            {% endif %}
         </div>
-
-        <footer>
-            <span>© 2026 CareOrbit. All rights reserved.</span>
-            <div class="footer-links">
-                <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
-                <a href="{% url 'terms_of_service' %}">Terms of Service</a>
-                <a href="{% url 'contact_us' %}">Contact Us</a>
+        <div class="nav-right">
+            {% if request.session.user_id %}
+            <div class="nav-avatar">
+                {{ patient.name|first|upper }}
             </div>
-        </footer>
+            <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+            <a href="{% url 'signup' %}">Sign Up</a>
+            <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
 
-    </body>
+    <div class="container">
+        {% block body_block %}
+        {% endblock %}
+    </div>
+
+    <footer>
+        <span>© 2026 CareOrbit. All rights reserved.</span>
+        <div class="footer-links">
+            <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+            <a href="{% url 'terms_of_service' %}">Terms of Service</a>
+            <a href="{% url 'contact_us' %}">Contact Us</a>
+        </div>
+    </footer>
+
+</body>
+
 </html>

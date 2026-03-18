@@ -2,13 +2,13 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - Dashboard
+CareOrbit - Dashboard
 {% endblock %}
 
 {% block body_block %}
 
 <div class="dashboard-greeting">
-    <h2>Good morning, {{ user.first_name }} ✏️</h2>
+    <h2 id="greet" data-name="{{ patient.name }}">Hello</h2>
 </div>
 
 <div class="dashboard-layout">
@@ -18,20 +18,8 @@
         <section class="dashboard-section">
             <h3>Upcoming Appointments</h3>
 
-            <div class="appointment-card">
-                <div class="appointment-info">
-                    <strong>Dr. Jane Smith</strong>
-                    <p>General Checkup · Mon 5 Oct, 10:30am</p>
-                </div>
-                <span class="badge badge-confirmed">CONFIRMED</span>
-            </div>
-
-            <div class="appointment-card">
-                <div class="appointment-info">
-                    <strong>Dr. John Brown</strong>
-                    <p>Dental Checkup · Mon 29 Oct, 10:30am</p>
-                </div>
-                <span class="badge badge-pending">PENDING</span>
+            <div id="appointments-container">
+                <p>You have no appointments.</p>
             </div>
 
         </section>
@@ -39,21 +27,8 @@
         <section class="dashboard-section">
             <h3>Your Updates</h3>
 
-            <div class="update-card update-warning">
-                <span class="update-icon">⚠️</span>
-                <div class="update-info">
-                    <strong>Flu Vaccine Due</strong>
-                    <p>Recommended by 15 Mar 2026</p>
-                    <a href="{% url 'book_appointment' %}">Click to Book</a>
-                </div>
-            </div>
-
-            <div class="update-card update-success">
-                <span class="update-icon">✅</span>
-                <div class="update-info">
-                    <strong>COVID Booster</strong>
-                    <p>Completed · Jan 2026</p>
-                </div>
+            <div id="updates-container">
+                <p>You have no updates.</p>
             </div>
 
         </section>
@@ -97,4 +72,5 @@
 
 </div>
 
+<script src="{% static 'js/dashboard.js' %}"></script>
 {% endblock %}

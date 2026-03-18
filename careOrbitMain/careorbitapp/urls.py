@@ -33,4 +33,7 @@ urlpatterns = [
     path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
     path("terms-of-service/", views.terms_of_service, name="terms_of_service"),
     path("contact-us/", views.contact_us, name="contact_us"),
+
+    path('dashboard/appointments-data/', views.appointment_data, name='appointments_data'),
+    path('dashboard/updates-data/', views.update_data, name='updates_data'),
 ]

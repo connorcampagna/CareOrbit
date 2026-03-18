@@ -30,3 +30,4 @@ admin.site.register(Record, RecordAdmin)
 admin.site.register(TestResult,TestResultAdmin)
 admin.site.register(DoctorNote)
 admin.site.register(DoctorSchedule)
+

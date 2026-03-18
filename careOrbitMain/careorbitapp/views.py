@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from datetime import datetime
+from django.http import HttpResponse, JsonResponse
+from datetime import datetime,date
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password, check_password
 from .models import User, Appointment,  Visit, TestResult, DoctorNote, Record, Medication
@@ -29,16 +29,26 @@ def logout(request):
 
 def signup(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        name = f"{first_name} {last_name}".strip()
         email = request.POST.get('email')
-        password = request.POST.get('password')
-        nhs = request.POST.get('nhsNumber')
-        dob = request.POST.get('date_of_birth')
-        phone = request.POST.get('phoneNumber')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        dob = request.POST.get('dob')
+        phone = request.POST.get('phone', '')
+        nhs = request.POST.get('nhsNumber', '')
+
+        if password1 != password2:
+            return render(request, 'careorbit/signup.html', {'error': 'Passwords do not match.'})
+
+        if not name:
+            return render(request, 'careorbit/signup.html', {'error': 'Name is required.'})
+
         user = User.objects.create(
             name=name,
             email=email,
-            passwordHash=make_password(password),
+            passwordHash=make_password(password1),
             nhsNumber=nhs,
             date_of_birth=dob,
             phoneNumber=phone,
@@ -198,3 +208,62 @@ def contact_us(request):
 
 def get_current_patient():#TODO: after authentication is implemented, this function should return the currently logged in patient
     return User.objects.filter(role='patient').first()
+
+def appointment_data(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return JsonResponse({'error': 'No one is logged in.'}, status=401)
+        
+    # make sure user exists within DB
+    try:
+        user = User.objects.get(userID=user_id)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'usr doesnt exist in db.'}, status=404)
+
+    # Get appointments
+    today = date.today()
+    upcoming_appointments = Appointment.objects.filter(
+        patientID=user,
+        appointmentDate__gte=today
+    ).order_by('appointmentDate', 'appointmentTime')
+
+    appointments_list = []
+    for appt in upcoming_appointments:
+        appointments_list.append({
+            'doctor_name': appt.doctorID.name if appt.doctorID else 'Unknown Doctor',
+            'reason': appt.appointmentReason,
+
+            'date': appt.appointmentDate.strftime('%Y-%m-%d'), 
+            'time': appt.appointmentTime.strftime('%H:%M') if appt.appointmentTime else '', 
+            'status': appt.status
+        })
+
+
+    return JsonResponse({'appointments': appointments_list})
+
+def update_data(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return JsonResponse({'error': 'No one is logged in.'}, status=401)
+
+    # make sure user exists within DB
+    try:
+        user = User.objects.get(userID=user_id)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'usr doesnt exist in db.'}, status=404)
+
+    # Get medications that need a refill
+    refill_medications = Medication.objects.filter(
+        patientID=user,
+        needsRefill=True
+    )
+
+    medications_list = []
+    for med in refill_medications:
+        medications_list.append({
+            'name': med.name,
+            'dosage': med.dosage,
+            'frequency': med.frequency,
+        })
+
+    return JsonResponse({'medications': medications_list})
