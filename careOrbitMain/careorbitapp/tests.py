@@ -3,6 +3,7 @@ from django.contrib.auth.hashers import make_password
 from careorbitapp.models import User
 
 
+# Tests for user authentication
 class AuthenticationTests(TestCase):
 
     def setUp(self):
