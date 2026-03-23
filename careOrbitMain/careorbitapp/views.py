@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime,date
@@ -11,7 +12,7 @@ def login(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(email=email,parentID__isnull=True) # parent_ID is null as once you add depdent it returns 2 users
             if check_password(password, user.passwordHash):
                 request.session['user_id'] = user.userID
                 return redirect('/dashboard/')
@@ -186,7 +187,8 @@ def book_appointment(request):
     return render(request, "careorbit/book_appointment.html", context)
 
 def dependents(request):
-    patient = get_current_patient()#TODO: auth
+    user_id = request.session.get('user_id')
+    patient = User.objects.filter(userID=user_id).first()
 
     dependents = User.objects.filter(parentID=patient)
 
@@ -267,3 +269,35 @@ def update_data(request):
         })
 
     return JsonResponse({'medications': medications_list})
+
+
+def add_dependent(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            parent = User.objects.get(userID=request.session.get('user_id'))
+            
+
+            # dependent data 
+            dependent = User.objects.create(
+                parentID=parent, 
+                role='patient',
+                name=data.get('name'),
+                date_of_birth=data.get('dob'),
+                email=data.get('email'),
+                phoneNumber=data.get('phone', ''),
+                passwordHash='auto-generated-or-default', 
+                nhsNumber= data.get('nhs', '')
+            )
+            
+            return JsonResponse({
+                'status': 'success', 
+                'message': 'Dependent added successfully',
+                'dependent_name': dependent.name,
+                'nhs_number': dependent.nhsNumber
+            })
+            
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+            

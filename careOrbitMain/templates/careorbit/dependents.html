@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - Dependents
+CareOrbit - Dependents
 {% endblock %}
 
 {% block body_block %}
@@ -12,11 +12,32 @@
         <h2>My Family</h2>
         <p>Manage dependents linked to you account</p>
     </div>
-    <button class="add-dependents-button" onclick="toggleAddForm()">+ Add Dependent</button>
 </div>
 
 <div class="dependents-list">
-    <!-- Might hardcode depndents as a place holder-->
+    {% for dependent in dependents %}
+    <div class="dependent-card">
+        <div class="dependent-card-left">
+            <!-- Circle with Initials -->
+            <div class="dependent-avatar">
+                {{ dependent.name|first|upper }}
+            </div>
+
+            <div class="dependent-info">
+                <strong>{{ dependent.name }}</strong>
+                <p>Date of birth: {{ dependent.date_of_birth|date:"j M Y" }} • NHS No: {{ dependent.nhsNumber|default:"N/A" }}</p>
+                <div class="dependent-badges">
+                    <!-- Placeholder badges like the design -->
+                    <span class="badge-active">ACTIVE</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-view-profile">View Profile &rarr;</button>
+    </div>
+    {% empty %}
+    <p style="text-align: center; color: #666; padding: 20px;">No dependents linked to your account yet.</p>
+    {% endfor %}
 </div>
 
 <div class="add-dependent-form">
@@ -26,8 +47,18 @@
 
         <div class="add-dependent-grid">
             <div class="form-group">
+                <label>Dependent Name</label>
+                <input type="name" name="dependent" placeholder="Jane Doe">
+            </div>
+
+            <div class="form-group">
                 <label>Parents Email</label>
-                <input type="email" name="parent_email" placeholder="janedoe@gmail.com">
+                <input type="email" name="parent_email" value="{{ patient.email }}" placeholder="janedoe@gmail.com">
+            </div>
+
+            <div class="form-group">
+                <label>NHS Number</label>
+                <input type="text" name="nhs" placeholder="123-456-7890">
             </div>
 
             <div class="form-group">
@@ -52,8 +83,10 @@
         </div>
 
         <div class="add-dependent-actions">
-            <button type="submit" class="btn-link-account">Link Account</button>
+            <button type="submit" class="btn-link-account">Add Dependent</button>
             <button type="button" class="btn-cancel" onclick="toggleAddForm()">Cancel</button>
         </div>
     </form>
 </div>
+<script src="{% static 'js/dependents.js' %}"></script>
+{% endblock %}

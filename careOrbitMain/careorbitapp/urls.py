@@ -36,4 +36,6 @@ urlpatterns = [
 
     path('dashboard/appointments-data/', views.appointment_data, name='appointments_data'),
     path('dashboard/updates-data/', views.update_data, name='updates_data'),
+
+    path('add-dependent/', views.add_dependent, name='add_dependent'),
 ]
