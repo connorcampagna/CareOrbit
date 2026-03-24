@@ -1,16 +1,12 @@
-"""
-WSGI config for careOrbitMain project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
-"""
-
 import os
+import sys
+
+# Path to your project folder
+path = '/home/careOrbit/CareOrbit/careOrbitMain'
+if path not in sys.path:
+    sys.path.append(path)
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'careOrbitMain.settings'
 
 from django.core.wsgi import get_wsgi_application
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'careOrbitConfigs.settings')
-
 application = get_wsgi_application()
