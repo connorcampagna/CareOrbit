@@ -1,24 +1,74 @@
 
+
 from django.http import HttpResponse
 from datetime import datetime
+import json
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from datetime import datetime,date
 from django.shortcuts import render, redirect
+from django.contrib.auth.hashers import make_password, check_password
 from .models import User, Appointment,  Visit, TestResult, DoctorNote, Record, Medication
 
 
 def login(request):
     if request.method == 'POST':
-        pass
-    return render(request, "careorbit/login.html")
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        try:
+            user = User.objects.get(email=email,parentID__isnull=True) # parent_ID is null as once you add depdent it returns 2 users
+            if check_password(password, user.passwordHash):
+                request.session['user_id'] = user.userID
+                return redirect('/dashboard/')
+        except User.DoesNotExist:
+            pass
+        return render(request, 'careorbit/login.html', {'error': 'Incorrect email or password.'})
+    return render(request, 'careorbit/login.html')
 
+
+
+def logout(request):
+    request.session.flush()
+    return redirect('/login/')
 
 
 def signup(request):
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        name = f"{first_name} {last_name}".strip()
+        email = request.POST.get('email')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        dob = request.POST.get('dob')
+        phone = request.POST.get('phone', '')
+        nhs = request.POST.get('nhsNumber', '')
+
+        if password1 != password2:
+            return render(request, 'careorbit/signup.html', {'error': 'Passwords do not match.'})
+
+        if not name:
+            return render(request, 'careorbit/signup.html', {'error': 'Name is required.'})
+
+        user = User.objects.create(
+            name=name,
+            email=email,
+            passwordHash=make_password(password1),
+            nhsNumber=nhs,
+            date_of_birth=dob,
+            phoneNumber=phone,
+            role='patient',
+        )
+        request.session['user_id'] = user.userID
+        return redirect('/dashboard/')
     return render(request, 'careorbit/signup.html')
 
 def forgot_password(request):
     return render(request, 'careorbit/forgot_password.html')
 
 def dashboard(request):
+    if not request.session.get('user_id'):
+        return redirect('/login/')
     patient = get_current_patient()#TODO: auth
 
     recent_medications = Medication.objects.filter(patientID=patient).order_by("-prescribedAt")[:3]
@@ -118,7 +168,9 @@ def medications(request):
     return render(request, "careorbit/medications.html", context)
 
 def medication_refill(request):
-    return HttpResponse("Medication Refill")
+    patient = get_current_patient()  # TODO: auth
+    medications = Medication.objects.filter(patientID=patient)
+    return render(request, "careorbit/refill.html", {"medications": medications})
 
 def medication_report(request):#TODO: auth
     patient = get_current_patient()
@@ -130,16 +182,17 @@ def medication_report(request):#TODO: auth
         "medications": medications,
     }
 
-    return render(request, "careorbit/medication_report.html", context)
+    return render(request, "careorbit/report.html", context)
 
 def appointments(request):
-    return HttpResponse("Appointments")
+    return render(request, "careorbit/Appointments.html")
 
 def book_appointment(request):
     return render(request, "careorbit/book_appointment.html", context)
 
 def dependents(request):
-    patient = get_current_patient()#TODO: auth
+    user_id = request.session.get('user_id')
+    patient = User.objects.filter(userID=user_id).first()
 
     dependents = User.objects.filter(parentID=patient)
 
@@ -151,13 +204,104 @@ def dependents(request):
     return render(request, "careorbit/dependents.html", context)
 
 def privacy_policy(request):
-    return HttpResponse("Privacy Policy")
+    return render(request, "careorbit/private-policy.html")
 
 def terms_of_service(request):
-    return HttpResponse("Terms of Service")
+    return render(request, "careorbit/terms_of_service.html")
 
 def contact_us(request):
-    return HttpResponse("Contact Us")
+    return render(request, "careorbit/contact_us.html")
 
 def get_current_patient():#TODO: after authentication is implemented, this function should return the currently logged in patient
     return User.objects.filter(role='patient').first()
+
+def appointment_data(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return JsonResponse({'error': 'No one is logged in.'}, status=401)
+        
+    # make sure user exists within DB
+    try:
+        user = User.objects.get(userID=user_id)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'usr doesnt exist in db.'}, status=404)
+
+    # Get appointments
+    today = date.today()
+    upcoming_appointments = Appointment.objects.filter(
+        patientID=user,
+        appointmentDate__gte=today
+    ).order_by('appointmentDate', 'appointmentTime')
+
+    appointments_list = []
+    for appt in upcoming_appointments:
+        appointments_list.append({
+            'doctor_name': appt.doctorID.name if appt.doctorID else 'Unknown Doctor',
+            'reason': appt.appointmentReason,
+
+            'date': appt.appointmentDate.strftime('%Y-%m-%d'), 
+            'time': appt.appointmentTime.strftime('%H:%M') if appt.appointmentTime else '', 
+            'status': appt.status
+        })
+
+
+    return JsonResponse({'appointments': appointments_list})
+
+def update_data(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return JsonResponse({'error': 'No one is logged in.'}, status=401)
+
+    # make sure user exists within DB
+    try:
+        user = User.objects.get(userID=user_id)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'usr doesnt exist in db.'}, status=404)
+
+    # Get medications that need a refill
+    refill_medications = Medication.objects.filter(
+        patientID=user,
+        needsRefill=True
+    )
+
+    medications_list = []
+    for med in refill_medications:
+        medications_list.append({
+            'name': med.name,
+            'dosage': med.dosage,
+            'frequency': med.frequency,
+        })
+
+    return JsonResponse({'medications': medications_list})
+
+
+def add_dependent(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            parent = User.objects.get(userID=request.session.get('user_id'))
+            
+
+            # dependent data 
+            dependent = User.objects.create(
+                parentID=parent, 
+                role='patient',
+                name=data.get('name'),
+                date_of_birth=data.get('dob'),
+                email=data.get('email'),
+                phoneNumber=data.get('phone', ''),
+                passwordHash='auto-generated-or-default', 
+                nhsNumber= data.get('nhs', '')
+            )
+            
+            return JsonResponse({
+                'status': 'success', 
+                'message': 'Dependent added successfully',
+                'dependent_name': dependent.name,
+                'nhs_number': dependent.nhsNumber
+            })
+            
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+            

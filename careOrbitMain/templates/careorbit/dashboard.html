@@ -2,5 +2,96 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - Login
+CareOrbit - Dashboard
+{% endblock %}
+
+{% block body_block %}
+
+<div class="mb-4">
+    <h2 id="greet" data-name="{{ patient.name }}" class="fw-bold d-flex align-items-center">
+        Hello
+    </h2>
+</div>
+
+<div class="row g-4"> 
+    
+    <div class="col-md-7">
+
+        <section class="mb-5">
+            <h3 class="h5 fw-bold mb-3">Upcoming appointments</h3>
+            <div id="appointments-container">
+                <div class="text-center text-muted py-4 border rounded bg-white shadow-sm">
+                    <div class="spinner-border spinner-border-sm me-2 text-primary" role="status"></div>
+                    Loading appointments...
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-5">
+            <h3 class="h5 fw-bold mb-3">Your Updates</h3>
+            <div id="updates-container">
+                <div class="text-center text-muted py-4 border rounded bg-white shadow-sm">
+                    <div class="spinner-border spinner-border-sm me-2 text-primary" role="status"></div>
+                    Loading updates...
+                </div>
+            </div>
+        </section>
+
+    </div> <div class="col-md-5">
+
+        <section class="mb-4">
+            <h3 class="h5 fw-bold mb-3">Quick Access</h3>
+
+            <div class="row g-3">
+                
+                <div class="col-6">
+                    <a href="{% url 'book_appointment' %}" class="card h-100 text-center p-3 text-decoration-none text-dark shadow-sm hover-card">
+                        <span class="fs-1 d-block mb-2">📅</span>
+                        <span class="small fw-semibold">Schedule an Appointment</span>
+                    </a>
+                </div>
+
+                <div class="col-6">
+                    <a href="{% url 'dependents' %}" class="card h-100 text-center p-3 text-decoration-none text-dark shadow-sm hover-card">
+                        <span class="fs-1 d-block mb-2">👥</span>
+                        <span class="small fw-semibold">Dependents</span>
+                    </a>
+                </div>
+
+                <div class="col-6">
+                    <a href="{% url 'test_results' %}" class="card h-100 text-center p-3 text-decoration-none text-dark shadow-sm hover-card">
+                        <span class="fs-1 d-block mb-2">🧪</span>
+                        <span class="small fw-semibold">Test Results</span>
+                    </a>
+                </div>
+
+                <div class="col-6">
+                    <a href="{% url 'medications' %}" class="card h-100 text-center p-3 text-decoration-none text-dark shadow-sm hover-card">
+                        <span class="fs-1 d-block mb-2">💊</span>
+                        <span class="small fw-semibold">Medications</span>
+                    </a>
+                </div>
+
+                <div class="col-6">
+                    <a href="{% url 'visit_history' %}" class="card h-100 text-center p-3 text-decoration-none text-dark shadow-sm hover-card">
+                        <span class="fs-1 d-block mb-2">🤝</span>
+                        <span class="small fw-semibold">Visits</span>
+                    </a>
+                </div>
+
+                <div class="col-6">
+                    <a href="{% url 'general_documents' %}" class="card h-100 text-center p-3 text-decoration-none text-dark shadow-sm hover-card">
+                        <span class="fs-1 d-block mb-2">📄</span>
+                        <span class="small fw-semibold">Documents</span>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+</div>
+
+<script src="{% static 'js/dashboard.js' %}"></script>
 {% endblock %}

@@ -2,5 +2,91 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - Login
+CareOrbit - Dependents
+{% endblock %}
+
+{% block body_block %}
+
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">My Family</h2>
+    <p class="text-muted">Manage dependents linked to your account</p>
+</div>
+
+<div class="dependents-list mb-5">
+    {% for dependent in dependents %}
+    <div class="dependent-card">
+        <div class="dependent-card-left">
+            <div class="dependent-avatar">
+                {{ dependent.name|first|upper }}
+            </div>
+            <div class="dependent-info">
+                <strong>{{ dependent.name }}</strong>
+                <p>Date of birth: {{ dependent.date_of_birth|date:"j M Y" }} • NHS No: {{ dependent.nhsNumber|default:"N/A" }}</p>
+                <div class="dependent-badges">
+                    <span class="badge-active">ACTIVE</span>
+                </div>
+            </div>
+        </div>
+        <button class="btn-view-profile">View Profile &rarr;</button>
+    </div>
+    {% empty %}
+    <p class="text-center text-muted py-5 border rounded bg-white shadow-sm">No dependents linked to your account yet.</p>
+    {% endfor %}
+</div>
+
+<div class="add-dependent-form card shadow-sm border-0 mt-5">
+    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+        <h3 class="h5 fw-bold mb-0 text-primary text-uppercase">Add New Dependent</h3>
+    </div>
+    
+    <div class="card-body pt-3 pb-4">
+        <form method="POST" action="{% url 'dependents' %}">
+            {% csrf_token %}
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold text-muted">Dependent Name</label>
+                    <input type="text" class="form-control" name="dependent" placeholder="Jane Doe" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold text-muted">Parent's Email</label>
+                    <input type="email" class="form-control" name="parent_email" value="{{ patient.email }}" placeholder="janedoe@gmail.com" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold text-muted">NHS Number</label>
+                    <input type="text" class="form-control" name="nhs" placeholder="123-456-7890">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold text-muted">Date of Birth</label>
+                    <input type="date" class="form-control" name="dob" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold text-muted">Password</label>
+                    <input type="password" class="form-control" name="password" placeholder="Create a password" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold text-muted">Relationship</label>
+                    <select class="form-select" name="relationship" required>
+                        <option value="">Select relationship...</option>
+                        <option value="son">Son</option>
+                        <option value="daughter">Daughter</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4 fw-bold">Add Dependent</button>
+                <button type="reset" class="btn btn-light px-4">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{% static 'js/dependents.js' %}"></script>
 {% endblock %}

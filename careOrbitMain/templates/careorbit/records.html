@@ -2,5 +2,88 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - Login
+    CareOrbit - Records
+{% endblock %}
+
+{% block body_block %}
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Medical Records</h2>
+        <p class="text-muted">Access your test results, visit history, and clinical documentation.</p>
+    </div>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div class="bg-light px-3 py-2 rounded border">
+            <span class="text-muted small fw-bold" id="records-count">Showing All Records</span>
+        </div>
+        <div class="position-relative">
+            <input type="text" id="search-input" class="form-control ps-5" placeholder="Search records..." onkeyup="filterRecords()">
+            <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">🔍</span>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs mb-4 border-bottom-0" id="recordTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active fw-bold text-uppercase px-4" id="test-results-tab" data-bs-toggle="tab" data-bs-target="#test-results" type="button" role="tab">Test Results</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-bold text-uppercase px-4" id="visit-history-tab" data-bs-toggle="tab" data-bs-target="#visit-history" type="button" role="tab">Visit History</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-bold text-uppercase px-4" id="doctors-notes-tab" data-bs-toggle="tab" data-bs-target="#doctors-notes" type="button" role="tab">Doctor's Notes</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-bold text-uppercase px-4" id="general-docs-tab" data-bs-toggle="tab" data-bs-target="#general-docs" type="button" role="tab">Documents</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="recordTabsContent">
+        
+        <div class="tab-pane fade show active" id="test-results" role="tabpanel">
+            <div class="list-group shadow-sm">
+                <div class="record-row list-group-item">
+                    <div class="record-info"><strong>Full Blood Count (FBC)</strong><p>20 Jan 2026 · Dr. Jeff</p></div>
+                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
+                </div>
+                <div class="record-row list-group-item">
+                    <div class="record-info"><strong>Lipid Panel</strong><p>5 Dec 2025 · Dr. Kutner</p></div>
+                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
+                </div>
+                <div class="record-row list-group-item">
+                    <div class="record-info"><strong>Blood Test</strong><p>14 Nov 2025 · Dr. Mitchell</p></div>
+                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="visit-history" role="tabpanel">
+            <div class="list-group shadow-sm">
+                <div class="record-row list-group-item">
+                    <div class="record-info"><strong>General Checkup</strong><p>5 Oct 2025 · Dr. Wilson</p></div>
+                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="doctors-notes" role="tabpanel">
+            <div class="list-group shadow-sm">
+                <div class="record-row list-group-item">
+                    <div class="record-info"><strong>Post-Consultation Note</strong><p>20 Jan 2026 · Dr. Grey</p></div>
+                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="general-docs" role="tabpanel">
+            <div class="list-group shadow-sm">
+                <div class="record-row list-group-item">
+                    <div class="record-info"><strong>Sick Note</strong><p>10 Jan 2026 · Dr. House</p></div>
+                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 {% endblock %}

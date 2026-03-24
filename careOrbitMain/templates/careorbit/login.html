@@ -6,46 +6,61 @@
 {% endblock %}
 
 {% block body_block %}
-
-<div class="login-wrapper">
-    <div class="login-card">
-        <h2>Login</h2>
+<div class="d-flex justify-content-center align-items-center mt-5">
+    
+    <div class="card shadow p-4 w-100" style="max-width: 400px;">
+        
+        <h2 class="text-center mb-4">Login</h2>
+        
+        {% if error %}
+            <div class="alert alert-danger py-2" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
 
         <form method="POST" action="{% url 'login' %}">
             {% csrf_token %}
 
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Enter your Email"
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input 
+                    type="email" 
+                    class="form-control" 
+                    id="email" 
+                    name="email" 
+                    placeholder="Enter your Email" 
                     required
                 >
             </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Enter your password"
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="password" class="form-label mb-0">Password</label>
+                    <a href="{% url 'forgot_password' %}" class="text-decoration-none small">Forgot Password?</a>
+                </div> <input 
+                    type="password" 
+                    class="form-control" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Enter your password" 
                     required
                 >
-                <a href="{% url 'forgot_password' %}" class="forgot-link">Forgot Password?</a>
+            </div>
+            
+            <div class="form-check mb-4"> <input class="form-check-input" type="checkbox" name="remember_me" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">
+                    Remember me
+                </label>
             </div>
 
-            <button type="submit" class="btn-login">Login</button>
+            <button type="submit" class="btn btn-primary w-100 py-2">Login</button>
 
         </form>
 
-        <p class="signup-prompt">
-            Don't have an account? <a href="{% url 'signup' %}">Sign Up</a>
+        <p class="text-center mt-4 mb-0">
+            Don't have an account? <a href="{% url 'signup' %}" class="text-decoration-none fw-bold">Sign Up</a>
         </p>
 
     </div>
 </div>
-
 {% endblock %}

@@ -2,5 +2,64 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - Login
+    CareOrbit - medications
+{% endblock %}
+
+{% block body_block %}
+
+
+<div class="medications-wrapper">
+
+    <div class="medications-header">
+        <h2>💊 Current Medications</h2>
+    </div>
+
+    <!-- I hardcoded as a place holder -->
+    <div class="medications-list">
+
+        <div class="medication-row">
+            <div class="medication-info">
+                <strong>Metformin</strong>
+                <p>500mg · twice daily</p>
+            </div>
+            <span class="med-badge med-badge-refill">REFILL NEEDED</span>
+        </div>
+
+        <div class="medication-row">
+            <div class="medication-info">
+                <strong>Sertraline</strong>
+                <p>50mg · once daily</p>
+            </div>
+            <span class="med-badge med-badge-active">ACTIVE</span>
+        </div>
+
+        <div class="medication-row">
+            <div class="medication-info">
+                <strong>Cetirizine</strong>
+                <p>10mg · once daily</p>
+            </div>
+            <span class="med-badge med-badge-active">ACTIVE</span>
+        </div>
+
+        <div class="medication-row">
+            <div class="medication-info">
+                <strong>Amoxicillin</strong>
+                <p>250mg · as prescribed</p>
+            </div>
+            <span class="med-badge med-badge-completed">COMPLETED</span>
+        </div>
+
+    </div>
+
+    <div class="medications-actions">
+        <a href="{% url 'medication_refill' %}" class="med-action-link">
+            ⚠ Request Refill →
+        </a>
+        <a href="{% url 'medication_report' %}" class="med-action-link">
+            ⚠ Report Abnormality →
+        </a>
+    </div>
+
+</div>
+
 {% endblock %}

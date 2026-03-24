@@ -2,5 +2,59 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - Login
+    CareOrbit - refill
+{% endblock %}
+
+{% block body_block %}
+
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <h2>Request Refill</h2>
+
+        <form method="POST" action="{% url 'medication_refill' %}">
+            {% csrf_token %}
+
+            <!-- Hardcoded for now-->
+            <div class="form-group">
+                <label>MEDICATION</label>
+                <select name="medication">
+                    <option value="">Select a medication</option>
+                    <option value="metformin">Metformin 500mg</option>
+                    <option value="sertraline">Sertraline 50mg</option>
+                    <option value="cetirizine">Cetirizine 10mg</option>
+                    <option value="amoxicillin">Amoxicillin 250mg</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>QUANTITY NEEDED</label>
+                <select name="quantity">
+                    <option value="28">28 tablets</option>
+                    <option value="56">56 tablets</option>
+                    <option value="84">84 tablets</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>PREFERRED PHARMACY</label>
+                <input type="text" name="pharmacy" placeholder="Enter pharmacy name or address">
+            </div>
+
+            <div class="form-group">
+                <label>ADDITIONAL NOTES</label>
+                <textarea name="notes" rows="3" placeholder="Any additional information..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-login">Submit Refill Request</button>
+
+        </form>
+
+        <p class="signup-prompt">
+            <a href="{% url 'medications' %}">← Back to Medications</a>
+        </p>
+
+    </div>
+</div>
+
 {% endblock %}

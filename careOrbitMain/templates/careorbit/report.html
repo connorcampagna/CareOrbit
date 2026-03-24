@@ -2,5 +2,59 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - Login
+    CareOrbit - report
+{% endblock %}
+
+{% block body_block %}
+
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <h2>Report Abnormality</h2>
+
+        <form method="POST" action="{% url 'medication_report' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>MEDICATION</label>
+                <select name="medication">
+                    <option value="">Select a medication</option>
+                    <option value="metformin">Metformin 500mg</option>
+                    <option value="sertraline">Sertraline 50mg</option>
+                    <option value="cetirizine">Cetirizine 10mg</option>
+                    <option value="amoxicillin">Amoxicillin 250mg</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>SYMPTOM DESCRIPTION</label>
+                <textarea name="symptom" rows="3" placeholder="Describe the symptom or abnormality you experienced..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>SEVERITY LEVEL</label>
+                <div class="severity-group">
+                    <button type="button" class="severity-btn" id="severity-mild" onclick="setSeverity('mild')">Mild</button>
+                    <button type="button" class="severity-btn" id="severity-moderate" onclick="setSeverity('moderate')">Moderate</button>
+                    <button type="button" class="severity-btn severity-btn-severe" id="severity-severe" onclick="setSeverity('severe')">Severe</button>
+                </div>
+                <input type="hidden" name="severity" id="severity" value="">
+            </div>
+
+            <div class="form-group">
+                <label>WHEN DID IT START</label>
+                <input type="date" name="started_date">
+            </div>
+
+            <button type="submit" class="btn-login">Submit Report</button>
+
+        </form>
+
+        <p class="signup-prompt">
+            <a href="{% url 'medications' %}">← Back to Medications</a>
+        </p>
+
+    </div>
+</div>
+
 {% endblock %}

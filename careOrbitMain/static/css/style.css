@@ -1,11 +1,261 @@
 
+.bg-custom-navy {
+    background-color: #2d2f5e !important;
+}
 
-nav {
-    background-color: #2d2f5e;
-    padding: 0 2rem;
-    height: 56px;
+.hover-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+}
+
+.appointment-card {
+    background-color: #fff;
+    border: 1px solid #212529; 
+    border-radius: 0.375rem; 
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); 
+    margin-bottom: 1rem;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.appointment-info strong {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.appointment-info p {
+    margin: 0;
+    font-size: 0.875em;
+    color: #6c757d; 
+}
+
+.badge {
+    padding: 0.5em 1em;
+    font-weight: bold;
+    border-radius: 0.375rem;
+}
+
+.badge-confirmed {
+    background-color: rgba(25, 135, 84, 0.1); 
+    color: #198754; 
+    border: 1px solid #198754;
+}
+
+.badge-pending {
+    background-color: rgba(255, 193, 7, 0.1); 
+    color: #ffc107;
+    border: 1px solid #ffc107;
+}
+
+.update-card {
+    background-color: #fff;
+    border-radius: 0.375rem;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.update-warning {
+    border: 1px solid #dee2e6;
+    border-left: 4px solid #ffc107; 
+}
+
+.update-success {
+    border: 1px solid #dee2e6;
+    border-left: 4px solid #198754;
+}
+
+.update-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    line-height: 1;
+}
+
+.update-info strong {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    color: #212529;
+}
+
+.update-info p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875em;
+    color: #6c757d;
+}
+
+.update-info a {
+    font-size: 0.875em;
+    font-weight: bold;
+    color: #ffc107;
+    text-decoration: none;
+}
+
+
+
+.dependent-card {
+    background-color: #fff;
+    border-radius: 0.375rem;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dependent-card-left {
     display: flex;
     align-items: center;
+}
+
+
+.dependent-avatar {
+    background-color: #cfe2ff; 
+    color: #0d6efd; 
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    flex-shrink: 0;
+    margin-right: 1.25rem;
+}
+
+.dependent-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.dependent-info strong {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    color: #212529;
+}
+
+.dependent-info p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875rem;
+    color: #6c757d; 
+}
+
+
+.badge-active {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: #198754;
+    border: 1px solid #198754;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 700;
+    border-radius: 0.375rem;
+    display: inline-block;
+    width: max-content;
+}
+
+
+.btn-view-profile {
+    background-color: transparent;
+    color: #0d6efd;
+    border: 1px solid #0d6efd;
+    padding: 0.375rem 1.5rem;
+    border-radius: 50rem; 
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-view-profile:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+
+@media (max-width: 768px) {
+    .dependent-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .btn-view-profile {
+        margin-top: 1rem;
+        width: 100%;
+    }
+}
+
+/* Records Tab Styling */
+.nav-tabs .nav-link {
+    color: #6c757d;
+    border: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: #dee2e6;
+    color: #2d2f5e;
+}
+
+.nav-tabs .nav-link.active {
+    color: #2d2f5e !important;
+    background-color: transparent !important;
+    border-bottom: 3px solid #2d2f5e !important; 
+}
+
+.record-row {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 1rem 1.5rem;
+    display: flex;
     justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s ease;
+}
+
+.record-row:hover {
+    background-color: #f8f9fa;
+}
+
+.record-info strong {
+    font-size: 1.1rem;
+    color: #212529;
+}
+
+.record-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+
+.btn-view {
+    background-color: #eef2ff;
+    color: #4f46e5;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+.btn-download {
+    background-color: transparent;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+}
+
+.btn-download:hover {
+    background-color: #f8f9fa;
 }
 
