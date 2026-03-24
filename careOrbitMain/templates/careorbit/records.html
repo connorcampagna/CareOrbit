@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - Records
+CareOrbit - Records
 {% endblock %}
 
 {% block body_block %}
@@ -17,69 +17,101 @@
             <span class="text-muted small fw-bold" id="records-count">Showing All Records</span>
         </div>
         <div class="position-relative">
-            <input type="text" id="search-input" class="form-control ps-5" placeholder="Search records..." onkeyup="filterRecords()">
+            <input type="text" id="search-input" class="form-control ps-5" placeholder="Search records..."
+                onkeyup="filterRecords()">
             <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">🔍</span>
         </div>
     </div>
 
     <ul class="nav nav-tabs mb-4 border-bottom-0" id="recordTabs" role="tablist">
         <li class="nav-item">
-            <button class="nav-link active fw-bold text-uppercase px-4" id="test-results-tab" data-bs-toggle="tab" data-bs-target="#test-results" type="button" role="tab">Test Results</button>
+            <button class="nav-link active fw-bold text-uppercase px-4" id="test-results-tab" data-bs-toggle="tab"
+                data-bs-target="#test-results" type="button" role="tab">Test Results</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link fw-bold text-uppercase px-4" id="visit-history-tab" data-bs-toggle="tab" data-bs-target="#visit-history" type="button" role="tab">Visit History</button>
+            <button class="nav-link fw-bold text-uppercase px-4" id="visit-history-tab" data-bs-toggle="tab"
+                data-bs-target="#visit-history" type="button" role="tab">Visit History</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link fw-bold text-uppercase px-4" id="doctors-notes-tab" data-bs-toggle="tab" data-bs-target="#doctors-notes" type="button" role="tab">Doctor's Notes</button>
+            <button class="nav-link fw-bold text-uppercase px-4" id="doctors-notes-tab" data-bs-toggle="tab"
+                data-bs-target="#doctors-notes" type="button" role="tab">Doctor's Notes</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link fw-bold text-uppercase px-4" id="general-docs-tab" data-bs-toggle="tab" data-bs-target="#general-docs" type="button" role="tab">Documents</button>
+            <button class="nav-link fw-bold text-uppercase px-4" id="general-docs-tab" data-bs-toggle="tab"
+                data-bs-target="#general-docs" type="button" role="tab">Documents</button>
         </li>
     </ul>
 
     <div class="tab-content" id="recordTabsContent">
-        
+
+        <!-- Test Results -->
         <div class="tab-pane fade show active" id="test-results" role="tabpanel">
             <div class="list-group shadow-sm">
+                {% for result in recent_results %}
                 <div class="record-row list-group-item">
-                    <div class="record-info"><strong>Full Blood Count (FBC)</strong><p>20 Jan 2026 · Dr. Jeff</p></div>
-                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
+                    <div class="record-info">
+                        <strong>{{ result.testName }}</strong>
+                        <p>{{ result.resultDate|date:"j M Y" }} &bull; {{ result.result }}</p>
+                    </div>
                 </div>
-                <div class="record-row list-group-item">
-                    <div class="record-info"><strong>Lipid Panel</strong><p>5 Dec 2025 · Dr. Kutner</p></div>
-                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
-                </div>
-                <div class="record-row list-group-item">
-                    <div class="record-info"><strong>Blood Test</strong><p>14 Nov 2025 · Dr. Mitchell</p></div>
-                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
-                </div>
+                {% empty %}
+                <div class="p-4 text-center text-muted">No test results found.</div>
+                {% endfor %}
             </div>
         </div>
 
+        <!-- Visit History -->
         <div class="tab-pane fade" id="visit-history" role="tabpanel">
             <div class="list-group shadow-sm">
+                {% for visit in recent_visits %}
                 <div class="record-row list-group-item">
-                    <div class="record-info"><strong>General Checkup</strong><p>5 Oct 2025 · Dr. Wilson</p></div>
-                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
+                    <div class="record-info">
+                        <strong>{{ visit.get_visitType_display }}</strong>
+                        <p>{{ visit.visitDate|date:"j M Y" }} &bull; Dr. {{ visit.doctorID.name }}</p>
+                    </div>
+                    <div class="record-actions">
+                        <a href="{% url 'visit_history' %}" class="btn-view">View All</a>
+                    </div>
                 </div>
+                {% empty %}
+                <div class="p-4 text-center text-muted">No visit history found.</div>
+                {% endfor %}
             </div>
         </div>
 
+        <!-- Doctor's Notes -->
         <div class="tab-pane fade" id="doctors-notes" role="tabpanel">
             <div class="list-group shadow-sm">
+                {% for note in recent_notes %}
                 <div class="record-row list-group-item">
-                    <div class="record-info"><strong>Post-Consultation Note</strong><p>20 Jan 2026 · Dr. Grey</p></div>
-                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
+                    <div class="record-info">
+                        <strong>Doctor's Note</strong>
+                        <p>{{ note.createdAt|date:"j M Y" }} &bull; {{ note.content|truncatechars:80 }}</p>
+                    </div>
                 </div>
+                {% empty %}
+                <div class="p-4 text-center text-muted">No doctor's notes found.</div>
+                {% endfor %}
             </div>
         </div>
 
+        <!-- Documents -->
         <div class="tab-pane fade" id="general-docs" role="tabpanel">
             <div class="list-group shadow-sm">
+                {% for doc in recent_documents %}
                 <div class="record-row list-group-item">
-                    <div class="record-info"><strong>Sick Note</strong><p>10 Jan 2026 · Dr. House</p></div>
-                    <div class="record-actions"><button class="btn-view">View</button><button class="btn-download">↓ Download</button></div>
+                    <div class="record-info">
+                        <strong>{{ doc.get_documentType_display }}</strong>
+                        <p>Uploaded {{ doc.uploadedAt|date:"j M Y" }}</p>
+                    </div>
+                    <div class="record-actions">
+                        <a href="{{ doc.fileUrl }}" target="_blank" class="btn-view">View</a>
+                        <a href="{{ doc.fileUrl }}" download class="btn-download">↓ Download</a>
+                    </div>
                 </div>
+                {% empty %}
+                <div class="p-4 text-center text-muted">No documents found.</div>
+                {% endfor %}
             </div>
         </div>
 

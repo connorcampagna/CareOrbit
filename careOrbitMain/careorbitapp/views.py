@@ -98,10 +98,14 @@ def records(request):
         patientID=patient
     ).order_by("-uploadedAt")[:5]
 
+    recent_visits = patient_visits.order_by("-visitDate")[:5]
+
     context = {
+        "patient": patient,
         "recent_results": recent_results,
         "recent_notes": recent_notes,
         "recent_documents": recent_documents,
+        "recent_visits": recent_visits,
     }
 
     return render(request, "careorbit/records.html", context)
