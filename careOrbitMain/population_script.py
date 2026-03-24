@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'careOrbitConfigs.settings')
 django.setup()
 
+from django.contrib.auth.hashers import make_password
 from careorbitapp.models import (
     User, Appointment, Visit, Medication, Record, DoctorNote, TestResult
 )
@@ -36,7 +37,7 @@ def populate():
         date_of_birth=date(1975, 4, 12),
         email='sarah.smith@careorbit.nhs.uk',
         phoneNumber='07700900001',
-        passwordHash='hashed_password',
+        passwordHash=make_password('hashed_password'),
         nhsNumber=None
     )
 
@@ -46,7 +47,7 @@ def populate():
         date_of_birth=date(1980, 8, 23),
         email='raj.patel@careorbit.nhs.uk',
         phoneNumber='07700900002',
-        passwordHash='hashed_password',
+        passwordHash=make_password('hashed_password'),
         nhsNumber=None
     )
 
@@ -56,7 +57,7 @@ def populate():
         date_of_birth=date(1985, 2, 17),
         email='emily.jones@careorbit.nhs.uk',
         phoneNumber='07700900003',
-        passwordHash='hashed_password',
+        passwordHash=make_password('hashed_password'),
         nhsNumber=None
     )
 
@@ -68,7 +69,7 @@ def populate():
         date_of_birth=date(1990, 6, 15),
         email='testpatient@gmail.com',
         phoneNumber='07700900010',
-        passwordHash='password123',
+        passwordHash=make_password('password123'),
         nhsNumber='111 222 3333'
     )
 
@@ -78,7 +79,7 @@ def populate():
         date_of_birth=date(1985, 3, 22),
         email='bob.williams@email.com',
         phoneNumber='07700900011',
-        passwordHash='password123',
+        passwordHash=make_password('password123'),
         nhsNumber='444 555 6666'
     )
 
@@ -88,7 +89,7 @@ def populate():
         date_of_birth=date(1972, 11, 5),
         email='carol.davies@email.com',
         phoneNumber='07700900012',
-        passwordHash='password123',
+        passwordHash=make_password('password123'),
         nhsNumber='777 888 9999'
     )
 
@@ -101,7 +102,7 @@ def populate():
         date_of_birth=date(2015, 7, 10),
         email='sam.johnson.child@careorbit.nhs.uk',
         phoneNumber='',
-        passwordHash='childpass',
+        passwordHash=make_password('childpass123'),
         nhsNumber='100 200 3001',
         parentID=alice
     )
@@ -112,7 +113,7 @@ def populate():
         date_of_birth=date(2018, 2, 28),
         email='lily.johnson.child@careorbit.nhs.uk',
         phoneNumber='',
-        passwordHash='childpass',
+        passwordHash=make_password('childpass123'),
         nhsNumber='100 200 3002',
         parentID=alice
     )
@@ -124,7 +125,7 @@ def populate():
         date_of_birth=date(2012, 9, 3),
         email='jake.williams.child@careorbit.nhs.uk',
         phoneNumber='',
-        passwordHash='childpass',
+        passwordHash=make_password('childpass123'),
         nhsNumber='100 200 3003',
         parentID=bob
     )
@@ -314,18 +315,6 @@ def populate():
         uploadedAt=datetime(2025, 12, 12, 16, 0)
     )
 
-    print("\n Population script complete!")
-    print("----------------------------")
-    print(f"  Doctors created:      3")
-    print(f"  Patients created:     3")
-    print(f"  Dependents created:   3")
-    print(f"  Appointments created: 6")
-    print(f"  Visits created:       2")
-    print(f"  Medications created:  4")
-    print(f"  Test results created: 3")
-    print(f"  Documents created:    2")
-    print("----------------------------")
-    print(f"\n  Login with:  testpatient@gmail.com / password123")
 
 
 if __name__ == '__main__':
