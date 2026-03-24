@@ -77,6 +77,7 @@ def dashboard(request):
     if not patient:
         return redirect('/login/')
 
+
     recent_medications = Medication.objects.filter(patientID=patient).order_by("-prescribedAt")[:3]
     recent_results = TestResult.objects.filter(patientID=patient).order_by("-resultDate")[:3]
     recent_visits = Visit.objects.filter(patientID=patient).order_by("-visitDate")[:3]
@@ -97,6 +98,7 @@ def records(request):
     if not patient:
         return redirect('/login/')
 
+
     patient_visits = Visit.objects.filter(patientID=patient)
     recent_results = TestResult.objects.filter(
         patientID=patient
@@ -110,11 +112,14 @@ def records(request):
         patientID=patient
     ).order_by("-uploadedAt")[:5]
 
+    recent_visits = patient_visits.order_by("-visitDate")[:5]
+
     context = {
         "patient": patient,
         "recent_results": recent_results,
         "recent_notes": recent_notes,
         "recent_documents": recent_documents,
+        "recent_visits": recent_visits,
     }
 
     return render(request, "careorbit/records.html", context)
@@ -123,6 +128,7 @@ def test_results(request):
     patient = get_current_patient(request)
     if not patient:
         return redirect('/login/')
+
 
     results = TestResult.objects.filter(
         patientID=patient
@@ -154,6 +160,7 @@ def doctors_notes(request):
     if not patient:
         return redirect('/login/')
 
+
     patient_visits = Visit.objects.filter(patientID=patient)
     notes = DoctorNote.objects.filter(visitID__in=patient_visits).order_by("-createdAt")
 
@@ -168,6 +175,7 @@ def general_documents(request):
     patient = get_current_patient(request)
     if not patient:
         return redirect('/login/')
+
 
     documents = Record.objects.filter(
         patientID=patient,
@@ -185,6 +193,7 @@ def medications(request):
     patient = get_current_patient(request)
     if not patient:
         return redirect('/login/')
+
 
     meds = Medication.objects.filter(patientID=patient).order_by("-prescribedAt")
     refill_needed = meds.filter(needsRefill=True)
@@ -320,7 +329,35 @@ def dependents(request):
     user_id = request.session.get('user_id')
     patient = User.objects.filter(userID=user_id).first()
 
-    dependents = User.objects.filter(parentID=patient)
+    dependents_qs = User.objects.filter(parentID=patient)
+    dependents = []
+    
+    for dep in dependents_qs:
+        badges = []
+        
+        # Check medications for refills needed
+        if Medication.objects.filter(patientID=dep, needsRefill=True).exists():
+            badges.append({'text': 'REFILL NEEDED', 'class': 'border border-warning text-warning fw-bold small px-2 py-1 rounded bg-white'})
+            
+        # Check upcoming appointments
+        today = date.today()
+        upcoming = Appointment.objects.filter(patientID=dep, appointmentDate__gte=today).order_by('appointmentDate').first()
+        
+        if upcoming:
+            if upcoming.status == 'booked':
+                badges.append({'text': 'APPOINTMENT CONFIRMED', 'class': 'border border-success text-success fw-bold small px-2 py-1 rounded bg-white'})
+            elif upcoming.status == 'pending':
+                badges.append({'text': 'CHECKUP DUE', 'class': 'border border-primary text-primary fw-bold small px-2 py-1 rounded bg-white'})
+        else:
+            badges.append({'text': 'NO UPCOMING APPOINTMENTS', 'class': 'border border-secondary text-secondary fw-bold small px-2 py-1 rounded bg-white'})
+             
+        dependents.append({
+            'userID': dep.userID,
+            'name': dep.name,
+            'date_of_birth': dep.date_of_birth,
+            'nhsNumber': dep.nhsNumber if dep.nhsNumber else 'N/A',
+            'badges': badges
+        })
 
     context = {
         "patient": patient,
@@ -337,6 +374,7 @@ def terms_of_service(request):
 
 def contact_us(request):
     return render(request, "careorbit/contact_us.html")
+
 
 def get_current_patient(request):
     user_id = request.session.get('user_id')
@@ -403,6 +441,7 @@ def update_data(request):
 
     return JsonResponse({'medications': medications_list})
 
+# all related dependent views
 
 def add_dependent(request):
     if request.method == 'POST':
@@ -411,8 +450,11 @@ def add_dependent(request):
 
             parent = User.objects.get(userID=request.session.get('user_id'))
             
-
-            # dependent data 
+            nhs_val = data.get('nhs', '').strip()
+            if not nhs_val:
+                nhs_val = None
+                
+            # dependent 
             dependent = User.objects.create(
                 parentID=parent, 
                 role='patient',
@@ -420,17 +462,116 @@ def add_dependent(request):
                 date_of_birth=data.get('dob'),
                 email=data.get('email'),
                 phoneNumber=data.get('phone', ''),
-                passwordHash='auto-generated-or-default', 
-                nhsNumber= data.get('nhs', '')
+                passwordHash='auto', 
+                nhsNumber=  nhs_val
             )
             
             return JsonResponse({
                 'status': 'success', 
-                'message': 'Dependent added successfully',
+                'message': 'Dependent added',
                 'dependent_name': dependent.name,
                 'nhs_number': dependent.nhsNumber
             })
             
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+def edit_dependent(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            dependent_id = data.get('dependent_id')
             
+            dependent = User.objects.filter(userID=dependent_id).first()
+
+            name = data.get('name', '').strip()
+            dob = data.get('dob')
+            nhs = data.get('nhs', '').strip()
+            
+            if name:
+                dependent.name = name
+            if dob:
+                dependent.date_of_birth = dob
+            if nhs:
+                dependent.nhsNumber = nhs
+            else:
+                dependent.nhsNumber = None
+                
+            dependent.save()
+            
+            return JsonResponse({
+                'status': 'success', 
+                'message': 'Profile updated',
+                'name': dependent.name,
+                'dob': dependent.date_of_birth.strftime('%Y-%m-%d') if dependent.date_of_birth else '',
+                'nhs': dependent.nhsNumber or ''
+            })
+            
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+ 
+
+
+def get_dependent_details(request):
+    if request.method == 'GET':
+        try:
+            dependent_id = request.GET.get('id')
+            dependent = User.objects.filter(userID=dependent_id).first()
+            
+            if not dependent:
+                return JsonResponse({'status': 'error', 'message': 'Dependent not found.'}, status=404)
+
+            
+            today = date.today()
+            upcomingAppointments = Appointment.objects.filter(
+                patientID=dependent,
+                appointmentDate__gte=today
+            ).order_by('appointmentDate', 'appointmentTime')
+            
+            # all appoinments for dependent 
+            appointments_list = []
+            for appt in upcomingAppointments:
+                appointments_list.append({
+                    'doctor': appt.doctorID.name if appt.doctorID else 'Unknown Provider',
+                    'reason': appt.appointmentReason,
+                    'date': appt.appointmentDate.strftime('%b %d, %Y'),
+                    'time': appt.appointmentTime.strftime('%I:%M %p') if appt.appointmentTime else '',
+                    'status': appt.status.upper()
+                })
+                
+            # all active medication for dependent 
+            medications = Medication.objects.filter(patientID=dependent).order_by('-prescribedAt')
+            medications_list = []
+            for med in medications:
+                medications_list.append({
+                    'name': med.name,
+                    'dosage': med.dosage,
+                    'frequency': med.frequency,
+                    'doctor': med.doctorID.name if med.doctorID else 'Unknown Provider',
+                    'needs_refill': med.needsRefill
+                })
+                
+            return JsonResponse({
+                'status': 'success',
+                'appointments': appointments_list,
+                'medications': medications_list
+            })
+            
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+
+def delete_dependent(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            dependent_id = data.get('dependent_id')
+            
+            dependent = User.objects.filter(userID=dependent_id).first()
+            dependent.delete()
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+ 

@@ -1,3 +1,4 @@
+
 """
 Django settings for CareOrbit project.
 
@@ -26,7 +27,7 @@ SECRET_KEY = '$o68jce@yk@d#rv)5tqx0*ae!i=p$*=w7cnjtzw1m0n7h#+wa)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['careorbit.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -122,3 +123,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [STATIC_DIR, ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

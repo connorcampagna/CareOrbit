@@ -21,16 +21,23 @@ CareOrbit - Dependents
             </div>
             <div class="dependent-info">
                 <strong>{{ dependent.name }}</strong>
-                <p>Date of birth: {{ dependent.date_of_birth|date:"j M Y" }} • NHS No: {{ dependent.nhsNumber|default:"N/A" }}</p>
-                <div class="dependent-badges">
-                    <span class="badge-active">ACTIVE</span>
+                <p class="mb-1">Date of birth: {{ dependent.date_of_birth|date:"j M Y" }} • NHS No: {{ dependent.nhsNumber }}</p>
+                <div class="dependent-badges d-flex flex-wrap gap-2 mt-2">
+                    {% for badge in dependent.badges %}
+                    <span class="{{ badge.class }}">{{ badge.text }}</span>
+                    {% endfor %}
                 </div>
             </div>
         </div>
-        <button class="btn-view-profile">View Profile &rarr;</button>
+        <button class="btn-view-profile" data-bs-toggle="modal" data-bs-target="#editDependentModal"
+            data-id="{{ dependent.userID }}" data-name="{{ dependent.name }}"
+            data-dob="{{ dependent.date_of_birth|date:'Y-m-d' }}" data-nhs="{{ dependent.nhsNumber|default:'' }}">
+            View Profile &rarr;
+        </button>
     </div>
     {% empty %}
-    <p class="text-center text-muted py-5 border rounded bg-white shadow-sm">No dependents linked to your account yet.</p>
+    <p class="text-center text-muted py-5 border rounded bg-white shadow-sm">No dependents linked to your account yet.
+    </p>
     {% endfor %}
 </div>
 
@@ -38,7 +45,7 @@ CareOrbit - Dependents
     <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
         <h3 class="h5 fw-bold mb-0 text-primary text-uppercase">Add New Dependent</h3>
     </div>
-    
+
     <div class="card-body pt-3 pb-4">
         <form method="POST" action="{% url 'dependents' %}">
             {% csrf_token %}
@@ -51,7 +58,8 @@ CareOrbit - Dependents
 
                 <div class="col-md-6">
                     <label class="form-label small fw-semibold text-muted">Parent's Email</label>
-                    <input type="email" class="form-control" name="parent_email" value="{{ patient.email }}" placeholder="janedoe@gmail.com" required>
+                    <input type="email" class="form-control" name="parent_email" value="{{ patient.email }}"
+                        placeholder="janedoe@gmail.com" required>
                 </div>
 
                 <div class="col-md-6">
@@ -66,7 +74,8 @@ CareOrbit - Dependents
 
                 <div class="col-md-6">
                     <label class="form-label small fw-semibold text-muted">Password</label>
-                    <input type="password" class="form-control" name="password" placeholder="Create a password" required>
+                    <input type="password" class="form-control" name="password" placeholder="Create a password"
+                        required>
                 </div>
 
                 <div class="col-md-6">
@@ -82,11 +91,61 @@ CareOrbit - Dependents
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary px-4 fw-bold">Add Dependent</button>
-                <button type="reset" class="btn btn-light px-4">Cancel</button>
             </div>
         </form>
     </div>
 </div>
+<div class="modal fade" id="editDependentModal" tabindex="-1" aria-labelledby="editDependentModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="editDependentModalLabel">Dependent Profile</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="editDependentForm">
+                    <input type="hidden" id="edit-dependent-id" name="dependent_id">
 
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Full Name</label>
+                        <input type="text" class="form-control" id="edit-dependent-name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Date of Birth</label>
+                        <input type="date" class="form-control" id="edit-dependent-dob" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">NHS Number</label>
+                        <input type="text" class="form-control" id="edit-dependent-nhs" placeholder="123-456-7890">
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="fw-bold text-primary mb-3 mt-4">Upcoming Appointments</h6>
+                    <div id="dependent-appointments-list" class="d-flex flex-column gap-2 mb-4">
+                        <div class="text-center text-muted small py-3">Loading appointments...</div>
+                    </div>
+
+                    <h6 class="fw-bold text-primary mb-3">Medications</h6>
+                    <div id="dependent-medications-list" class="d-flex flex-column gap-2">
+                        <div class="text-center text-muted small py-3">Loading medications...</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light w-100 justify-content-between">
+                <button type="button" class="btn btn-danger fw-bold" id="delete-dependent-btn">Delete Profile</button>
+                <div>
+                    <button type="button" class="btn btn-outline-secondary fw-bold"
+                        data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary fw-bold px-4" id="save-edit-btn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="{% static 'js/dependents.js' %}"></script>
+<script src="{% static 'js/edit_dependent.js' %}"></script>
 {% endblock %}

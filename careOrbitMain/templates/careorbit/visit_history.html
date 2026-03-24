@@ -1,0 +1,74 @@
+{% extends 'careorbit/base.html' %}
+{% load static %}
+
+{% block title_block %}
+CareOrbit - Visit History
+{% endblock %}
+
+{% block body_block %}
+
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">Visit History</h2>
+    <p class="text-muted">A full record of your past appointments and consultations</p>
+</div>
+
+{% if visits %}
+<div class="d-flex flex-column gap-3">
+    {% for visit in visits %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                    <h5 class="fw-bold mb-1">{{ visit.visitDate|date:"j F Y" }}</h5>
+                    <p class="text-muted small mb-0">
+                        {{ visit.get_visitType_display }} &bull;
+                        Dr. {{ visit.doctorID.name }}
+                    </p>
+                </div>
+                <span class="badge bg-primary-subtle text-primary border border-primary rounded-pill px-3 py-2">
+                    {{ visit.get_visitType_display }}
+                </span>
+            </div>
+
+            {% if visit.summary %}
+            <hr class="my-3">
+            <p class="mb-0 text-secondary">{{ visit.summary }}</p>
+            {% endif %}
+
+            {% with results=visit.testresult_set.all %}
+            {% if results %}
+            <hr class="my-3">
+            <h6 class="fw-semibold text-muted text-uppercase small mb-2">Test Results</h6>
+            <ul class="list-unstyled mb-0">
+                {% for result in results %}
+                <li class="mb-1">
+                    <strong>{{ result.testName }}:</strong>
+                    <span class="text-secondary">{{ result.result }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+
+            {% with notes=visit.doctornote_set.all %}
+            {% if notes %}
+            <hr class="my-3">
+            <h6 class="fw-semibold text-muted text-uppercase small mb-2">Doctor's Notes</h6>
+            {% for note in notes %}
+            <p class="text-secondary mb-1 fst-italic">"{{ note.content }}"</p>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div class="text-center py-5 text-muted">
+    <p class="fs-5">No visit records found.</p>
+    <p class="small">Your visit history will appear here after your first appointment.</p>
+</div>
+{% endif %}
+
+{% endblock %}
