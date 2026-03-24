@@ -188,7 +188,7 @@ def appointments(request):
     return render(request, "careorbit/Appointments.html")
 
 def book_appointment(request):
-    return render(request, "careorbit/book_appointment.html", context)
+    return render(request, "careorbit/book_appointment.html")
 
 def dependents(request):
     user_id = request.session.get('user_id')
