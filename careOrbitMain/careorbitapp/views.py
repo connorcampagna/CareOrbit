@@ -210,11 +210,11 @@ def dependents(request):
         
         if upcoming:
             if upcoming.status == 'booked':
-                badges.append({'text': 'APPT. CONFIRMED', 'class': 'border border-success text-success fw-bold small px-2 py-1 rounded bg-white'})
+                badges.append({'text': 'APPOINTMENT CONFIRMED', 'class': 'border border-success text-success fw-bold small px-2 py-1 rounded bg-white'})
             elif upcoming.status == 'pending':
                 badges.append({'text': 'CHECKUP DUE', 'class': 'border border-primary text-primary fw-bold small px-2 py-1 rounded bg-white'})
         else:
-            badges.append({'text': 'NO UPCOMING APPT', 'class': 'border border-secondary text-secondary fw-bold small px-2 py-1 rounded bg-white'})
+            badges.append({'text': 'NO UPCOMING APPOINTMENTS', 'class': 'border border-secondary text-secondary fw-bold small px-2 py-1 rounded bg-white'})
              
         dependents.append({
             'userID': dep.userID,
