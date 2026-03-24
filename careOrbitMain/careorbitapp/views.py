@@ -94,6 +94,8 @@ def dashboard(request):
 
 def records(request):
     patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
 
     patient_visits = Visit.objects.filter(patientID=patient)
     recent_results = TestResult.objects.filter(
@@ -109,6 +111,7 @@ def records(request):
     ).order_by("-uploadedAt")[:5]
 
     context = {
+        "patient": patient,
         "recent_results": recent_results,
         "recent_notes": recent_notes,
         "recent_documents": recent_documents,
@@ -117,10 +120,25 @@ def records(request):
     return render(request, "careorbit/records.html", context)
 
 def test_results(request):
-    return HttpResponse("Test Results")
+    patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
+
+    results = TestResult.objects.filter(
+        patientID=patient
+    ).order_by('-resultDate')
+
+    context = {
+        "patient": patient,
+        "results": results,
+    }
+
+    return render(request, "careorbit/test_results.html", context)
 
 def visit_history(request):
     patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
 
     visits = Visit.objects.filter(patientID=patient).order_by("-visitDate")
 
@@ -133,6 +151,8 @@ def visit_history(request):
 
 def doctors_notes(request):
     patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
 
     patient_visits = Visit.objects.filter(patientID=patient)
     notes = DoctorNote.objects.filter(visitID__in=patient_visits).order_by("-createdAt")
@@ -146,6 +166,8 @@ def doctors_notes(request):
 
 def general_documents(request):
     patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
 
     documents = Record.objects.filter(
         patientID=patient,
@@ -227,7 +249,7 @@ def appointments(request):
         "patient": patient,
         "appointments": appointments_list,
     }
-    return render(request, "careorbit/Appointments.html", context)
+    return render(request, "careorbit/appointments.html", context)
 
 def book_appointment(request):
     patient = get_current_patient(request)
