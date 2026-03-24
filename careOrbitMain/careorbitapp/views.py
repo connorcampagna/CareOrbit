@@ -1,9 +1,6 @@
 
 
-from django.http import HttpResponse
-from datetime import datetime
 import json
-from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime,date
 from django.shortcuts import render, redirect
@@ -15,10 +12,16 @@ def login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
+        remember_me = request.POST.get('remember_me')
         try:
             user = User.objects.get(email=email,parentID__isnull=True) # parent_ID is null as once you add depdent it returns 2 users
             if check_password(password, user.passwordHash):
                 request.session['user_id'] = user.userID
+                if remember_me:
+                    request.session.set_expiry(1209600)  # 2 weeks
+                else:
+                    request.session.set_expiry(0)
+
                 return redirect('/dashboard/')
         except User.DoesNotExist:
             pass
@@ -69,7 +72,10 @@ def forgot_password(request):
 def dashboard(request):
     if not request.session.get('user_id'):
         return redirect('/login/')
-    patient = get_current_patient()#TODO: auth
+    
+    patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
 
     recent_medications = Medication.objects.filter(patientID=patient).order_by("-prescribedAt")[:3]
     recent_results = TestResult.objects.filter(patientID=patient).order_by("-resultDate")[:3]
@@ -87,7 +93,7 @@ def dashboard(request):
     return render(request, "careorbit/dashboard.html", context)
 
 def records(request):
-    patient = get_current_patient()#TODO: auth
+    patient = get_current_patient(request)
 
     patient_visits = Visit.objects.filter(patientID=patient)
     recent_results = TestResult.objects.filter(
@@ -113,8 +119,8 @@ def records(request):
 def test_results(request):
     return HttpResponse("Test Results")
 
-def visit_history(request):#TODO: auth
-    patient = get_current_patient()
+def visit_history(request):
+    patient = get_current_patient(request)
 
     visits = Visit.objects.filter(patientID=patient).order_by("-visitDate")
 
@@ -125,8 +131,8 @@ def visit_history(request):#TODO: auth
 
     return render(request, "careorbit/visit_history.html", context)
 
-def doctors_notes(request):#TODO: auth
-    patient = get_current_patient()
+def doctors_notes(request):
+    patient = get_current_patient(request)
 
     patient_visits = Visit.objects.filter(patientID=patient)
     notes = DoctorNote.objects.filter(visitID__in=patient_visits).order_by("-createdAt")
@@ -138,8 +144,8 @@ def doctors_notes(request):#TODO: auth
 
     return render(request, "careorbit/doctors_notes.html", context)
 
-def general_documents(request):#TODO: auth
-    patient = get_current_patient()
+def general_documents(request):
+    patient = get_current_patient(request)
 
     documents = Record.objects.filter(
         patientID=patient,
@@ -154,7 +160,9 @@ def general_documents(request):#TODO: auth
     return render(request, "careorbit/general_documents.html", context)
 
 def medications(request):
-    patient = get_current_patient()#TODO: auth 
+    patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
 
     meds = Medication.objects.filter(patientID=patient).order_by("-prescribedAt")
     refill_needed = meds.filter(needsRefill=True)
@@ -168,12 +176,22 @@ def medications(request):
     return render(request, "careorbit/medications.html", context)
 
 def medication_refill(request):
-    patient = get_current_patient()  # TODO: auth
-    medications = Medication.objects.filter(patientID=patient)
-    return render(request, "careorbit/refill.html", {"medications": medications})
+    patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
 
-def medication_report(request):#TODO: auth
-    patient = get_current_patient()
+    medications = Medication.objects.filter(patientID=patient, needsRefill=True)
+
+    context = {
+        "patient": patient,
+        "medications": medications,
+    }
+    return render(request, "careorbit/refill.html", context)
+
+def medication_report(request):
+    patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
 
     medications = Medication.objects.filter(patientID=patient)
 
@@ -185,10 +203,96 @@ def medication_report(request):#TODO: auth
     return render(request, "careorbit/report.html", context)
 
 def appointments(request):
-    return render(request, "careorbit/Appointments.html")
+    patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
+
+    upcoming = Appointment.objects.filter(
+        patientID=patient,
+        appointmentDate__gte=date.today()
+    ).order_by('appointmentDate', 'appointmentTime')
+
+    appointments_list = []
+    for appt in upcoming:
+        appointments_list.append({
+            "title": appt.appointmentReason,
+            "date": appt.appointmentDate.strftime('%d %b %Y'),
+            "time": appt.appointmentTime.strftime('%H:%M'),
+            "doctor": appt.doctorID.name,
+            "location": "Virtual" if appt.visitType == 'virtual' else "Clinic",
+            "notes": "",
+        })
+
+    context = {
+        "patient": patient,
+        "appointments": appointments_list,
+    }
+    return render(request, "careorbit/Appointments.html", context)
 
 def book_appointment(request):
-    return render(request, "careorbit/book_appointment.html", context)
+    patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
+
+    doctors = User.objects.filter(role='doctor')
+    context = {
+        "patient": patient,
+        "doctors": doctors,
+    }
+
+    if request.method == 'POST':
+        reason = request.POST.get('reason')
+        other_description = request.POST.get('other_description')
+        visit_type = request.POST.get('visit_type')
+        preferred_date = request.POST.get('date')
+        doctor_id = request.POST.get('doctor')
+        selected_slot = request.POST.get('selected_slot')
+        #validation
+        if not preferred_date:
+            context["error"] = "Please select a date."
+            return render(request, "careorbit/book.html", context)
+
+        if not selected_slot:
+            context["error"] = "Please select a time slot."
+            return render(request, "careorbit/book.html", context)
+
+        if not visit_type:
+            context["error"] = "Please select visit type."
+            return render(request, "careorbit/book.html", context)
+
+        if not doctor_id:
+            context["error"] = "Please select a doctor."
+            return render(request, "careorbit/book.html", context)
+        
+        #handle other reasoning 
+        if reason == 'other':
+            if not other_description:
+                context["error"] = "Please describe your reason."
+                return render(request, "careorbit/book.html", context)
+            appointment_reason = other_description
+        else:
+            appointment_reason = reason
+        
+        try:
+            selected_doctor = User.objects.get(userID=doctor_id, role='doctor')
+        except User.DoesNotExist:
+            context["error"] = "Invalid doctor."
+            return render(request, "careorbit/book.html", context)
+        
+        Appointment.objects.create(
+            patientID=patient,
+            doctorID=selected_doctor,
+            appointmentReason=appointment_reason,
+            visitType=visit_type,
+            appointmentDate=preferred_date,
+            appointmentTime=selected_slot,
+            status='booked'
+        )
+
+        context["success"] = "Appointment booked successfully"
+        return render(request, "careorbit/book.html", context)
+
+    return render(request, "careorbit/book.html", context)
 
 def dependents(request):
     user_id = request.session.get('user_id')
@@ -212,8 +316,11 @@ def terms_of_service(request):
 def contact_us(request):
     return render(request, "careorbit/contact_us.html")
 
-def get_current_patient():#TODO: after authentication is implemented, this function should return the currently logged in patient
-    return User.objects.filter(role='patient').first()
+def get_current_patient(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return None
+    return User.objects.filter(userID=user_id).first()
 
 def appointment_data(request):
     user_id = request.session.get('user_id')
