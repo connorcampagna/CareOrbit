@@ -1,5 +1,4 @@
 
-// Dynamic Greeting
 
 document.addEventListener("DOMContentLoaded", function () {
 
