@@ -1,65 +1,53 @@
 {% extends 'careorbit/base.html' %}
 {% load static %}
 
-{% block title_block %}
-    CareOrbit - medications
-{% endblock %}
+{% block title_block %}CareOrbit - Medications{% endblock %}
 
 {% block body_block %}
 
-
-<div class="medications-wrapper">
-
-    <div class="medications-header">
-        <h2>💊 Current Medications</h2>
+<div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+        <h2 class="fw-bold mb-1">My Medications</h2>
+        <p class="text-muted mb-0">Your current prescriptions and active medications</p>
     </div>
-
-    <!-- I hardcoded as a place holder -->
-    <div class="medications-list">
-
-        <div class="medication-row">
-            <div class="medication-info">
-                <strong>Metformin</strong>
-                <p>500mg · twice daily</p>
-            </div>
-            <span class="med-badge med-badge-refill">REFILL NEEDED</span>
-        </div>
-
-        <div class="medication-row">
-            <div class="medication-info">
-                <strong>Sertraline</strong>
-                <p>50mg · once daily</p>
-            </div>
-            <span class="med-badge med-badge-active">ACTIVE</span>
-        </div>
-
-        <div class="medication-row">
-            <div class="medication-info">
-                <strong>Cetirizine</strong>
-                <p>10mg · once daily</p>
-            </div>
-            <span class="med-badge med-badge-active">ACTIVE</span>
-        </div>
-
-        <div class="medication-row">
-            <div class="medication-info">
-                <strong>Amoxicillin</strong>
-                <p>250mg · as prescribed</p>
-            </div>
-            <span class="med-badge med-badge-completed">COMPLETED</span>
-        </div>
-
+    <div class="d-flex gap-2">
+        <a href="{% url 'medication_refill' %}" class="btn btn-warning btn-sm fw-semibold">⚠ Request Refill</a>
+        <a href="{% url 'medication_report' %}" class="btn btn-outline-danger btn-sm fw-semibold">⚠ Report Issue</a>
     </div>
-
-    <div class="medications-actions">
-        <a href="{% url 'medication_refill' %}" class="med-action-link">
-            ⚠ Request Refill →
-        </a>
-        <a href="{% url 'medication_report' %}" class="med-action-link">
-            ⚠ Report Abnormality →
-        </a>
-    </div>
-
 </div>
 
+{% if refill_needed %}
+<div class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert">
+    <span>⚠</span>
+    <span>You have <strong>{{ refill_needed.count }} medication{{ refill_needed.count|pluralize }}</strong> that need a
+        refill.</span>
+</div>
+{% endif %}
+
+<div class="card border-0 shadow-sm" id="medications-container">
+    {% for med in medications %}
+    <div class="record-row {% if not forloop.last %}border-bottom{% endif %}" id="med-row-{{ med.medicationID }}">
+        <div class="record-info">
+            <strong>{{ med.name }}</strong>
+            <p class="mb-0 text-muted small">
+                {{ med.dosage }} &bull; {{ med.frequency }} &bull;
+                Prescribed by {{ med.doctorID.name }} on {{ med.prescribedAt|date:"j M Y" }}
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            {% if med.needsRefill %}
+            <span class="badge bg-warning text-dark" id="badge-{{ med.medicationID }}">REFILL NEEDED</span>
+            {% else %}
+            <span class="badge bg-success" id="badge-{{ med.medicationID }}">ACTIVE</span>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="p-4 text-center text-muted">
+        <p class="mb-0">No medications on record.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<script src="{% static 'js/medications.js' %}"></script>
 {% endblock %}

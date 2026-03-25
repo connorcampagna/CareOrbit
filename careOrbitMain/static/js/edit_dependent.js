@@ -1,3 +1,5 @@
+// edit depdentent profile 
+
 document.addEventListener('DOMContentLoaded', () => {
     const editModal = document.getElementById('editDependentModal');
 

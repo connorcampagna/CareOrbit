@@ -2,17 +2,99 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - Contact_us
+    CareOrbit - Contact Us
 {% endblock %}
 
 {% block body_block %}
+<div class="container py-5">
+    
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark mb-2">Get in Touch</h2>
+        <p class="text-muted">Have a question or need assistance? Our team is here to help.</p>
+    </div>
 
-        <section class="policy-section">
-            <h2>10. Contact Us</h2>
-            <p>If you have any questions or concerns about this Privacy Policy or how we handle your data, please contact us at:</p>
-            <p><strong>Email:</strong> privacy@careorbit.com</p>
-            <p><strong>Address:</strong> CareOrbit, 123 Health Street, Glasgow, G1 1AA, United Kingdom</p>
-            <p><strong>Phone number:</strong> 12345678910</p>
-        </section>
+    <div class="row g-5 justify-content-center">
+        
+        <div class="col-lg-4">
+            <div class="pe-lg-4">
+                <h4 class="fw-bold mb-4">Contact Information</h4>
+                
+                <div class="d-flex align-items-start mb-4">
+                    <div class="bg-primary-subtle text-primary rounded-circle d-flex justify-content-center align-items-center flex-shrink-0 me-3" style="width: 50px; height: 50px;">
+                        <span class="fs-4">✉️</span>
+                    </div>
+                    <div>
+                        <span class="d-block fw-bold text-dark">Email Us</span>
+                        <a href="mailto:privacy@careorbit.com" class="text-muted text-decoration-none hover-primary">privacy@careorbit.com</a>
+                    </div>
+                </div>
 
+                <div class="d-flex align-items-start mb-4">
+                    <div class="bg-primary-subtle text-primary rounded-circle d-flex justify-content-center align-items-center flex-shrink-0 me-3" style="width: 50px; height: 50px;">
+                        <span class="fs-4">📞</span>
+                    </div>
+                    <div>
+                        <span class="d-block fw-bold text-dark">Call Us</span>
+                        <span class="text-muted">+44 123 456 7891</span>
+                        <span class="d-block small text-muted mt-1">Mon-Fri, 9am - 5pm</span>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start">
+                    <div class="bg-primary-subtle text-primary rounded-circle d-flex justify-content-center align-items-center flex-shrink-0 me-3" style="width: 50px; height: 50px;">
+                        <span class="fs-4">📍</span>
+                    </div>
+                    <div>
+                        <span class="d-block fw-bold text-dark">Headquarters</span>
+                        <span class="text-muted">
+                            CareOrbit<br>
+                            123 Health Street<br>
+                            Glasgow, G1 1AA<br>
+                            United Kingdom
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4">Send us a Message</h4>
+                    
+                    <form method="POST" action="{% url 'contact_us' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Full Name</label>
+                                <input type="text" class="form-control bg-light" name="name" placeholder="John Doe" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Email Address</label>
+                                <input type="email" class="form-control bg-light" name="email" placeholder="name@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Subject</label>
+                            <input type="text" class="form-control bg-light" name="subject" placeholder="How can we help you?" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Message</label>
+                            <textarea class="form-control bg-light" name="message" rows="5" placeholder="Please describe your issue or question in detail..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm rounded-3">
+                            Send Message
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
 {% endblock %}
