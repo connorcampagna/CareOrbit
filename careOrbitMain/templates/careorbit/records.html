@@ -17,7 +17,7 @@ CareOrbit - Records
         
         <div class="col-md-5 col-lg-4">
             <select class="form-select form-select-lg shadow-sm fw-bold text-primary bg-white border-primary-subtle" onchange="window.location.href=this.value;">
-                <option value="{% url 'records' %}">👤 My Records (Self)</option>
+                 <option value="{% url 'medications' %}"> {% if patient %}{{ patient.name }}{% else %}My Medications{% endif %} (Self)</option>
             
                 {% if dependents %}
                     <optgroup label="My Dependents">

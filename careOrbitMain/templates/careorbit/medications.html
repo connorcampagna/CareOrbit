@@ -10,7 +10,7 @@
 
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
         <div>
-            <h2 class="fw-bold mb-1">💊 My Medications</h2>
+            <h2 class="fw-bold mb-1"> My Medications</h2>
             <p class="text-muted mb-0">Your current prescriptions and active medications.</p>
         </div>
         
@@ -19,7 +19,7 @@
                 ⚠ Request Refill
             </a>
             <a href="{% url 'medication_report' %}{% if request.GET.view_for %}?view_for={{ request.GET.view_for }}{% endif %}" class="btn btn-outline-danger fw-bold shadow-sm rounded-pill px-4">
-                ⚠️ Report Issue
+                 Report Issue
             </a>
         </div>
     </div>
@@ -27,14 +27,14 @@
     <div class="row mb-4">
         <div class="col-md-5 col-lg-4">
             <select class="form-select form-select-lg shadow-sm fw-bold text-primary bg-white border-primary-subtle" onchange="window.location.href=this.value;">
-                <option value="{% url 'medications' %}">👤 {% if patient %}{{ patient.name }}{% else %}My Medications{% endif %} (Self)</option>
+                <option value="{% url 'medications' %}"> {% if patient %}{{ patient.name }}{% else %}My Medications{% endif %} (Self)</option>
                 
                 {% if dependents %}
                     <optgroup label="My Dependents">
                     {% for dep in dependents %}
                         <option value="{% url 'medications' %}?view_for={{ dep.userID }}" 
                             {% if request.GET.view_for == dep.userID|stringformat:"s" %}selected{% endif %}>
-                            👦 {{ dep.name }}
+                             {{ dep.name }}
                         </option>
                     {% endfor %}
                     </optgroup>
@@ -79,7 +79,7 @@
             </div>
             {% empty %}
             <div class="p-5 text-center text-muted">
-                <span class="fs-1 d-block mb-3">💊</span>
+                <span class="fs-1 d-block mb-3"></span>
                 <h5 class="fw-bold text-dark">No medications on record</h5>
                 <p class="mb-0">Active prescriptions will appear here.</p>
             </div>

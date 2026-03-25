@@ -2,7 +2,6 @@
 
 function filterRecords() {
     const input = document.getElementById('search-input');
-    // Added .trim() to prevent accidental spacebar presses from ruining the search
     const filter = input.value.trim().toLowerCase(); 
     const activeTab = document.querySelector('.tab-pane.active');
     
@@ -15,11 +14,9 @@ function filterRecords() {
         const text = row.textContent.toLowerCase();
         
         if (text.includes(filter)) {
-            // Remove the hiding class to show the row
             row.classList.remove('d-none'); 
             visibleCount++;
         } else {
-            // Add the hiding class (which includes !important to override d-flex)
             row.classList.add('d-none'); 
         }
     });
