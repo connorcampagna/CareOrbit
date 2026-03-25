@@ -1,0 +1,52 @@
+{% extends 'careorbit/base.html' %}
+{% load static %}
+
+{% block title_block %}
+CareOrbit - Test Results
+{% endblock %}
+
+{% block body_block %}
+
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">Test Results</h2>
+    <p class="text-muted">A full record of your diagnostic tests and results</p>
+</div>
+
+{% if results %}
+<div class="d-flex flex-column gap-3">
+    {% for result in results %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                    <h5 class="fw-bold mb-1">{{ result.resultDate|date:"j F Y" }}</h5>
+                    <p class="text-muted small mb-0">
+                        {{ result.visitID.get_visitType_display }} &bull;
+                        Dr. {{ result.visitID.doctorID.name }}
+                    </p>
+                </div>
+                <span class="badge bg-primary-subtle text-primary border border-primary rounded-pill px-3 py-2">
+                    Lab Result
+                </span>
+            </div>
+
+            <hr class="my-3">
+
+            <h6 class="fw-semibold text-muted text-uppercase small mb-2">Test Result</h6>
+            <div class="mb-1">
+                <strong>{{ result.testName }}:</strong>
+                <span class="text-secondary">{{ result.result }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div class="text-center py-5 text-muted">
+    <p class="fs-5">No test records found.</p>
+    <p class="small">Your diagnostic results will appear here after they are uploaded by your healthcare provider.</p>
+</div>
+{% endif %}
+
+{% endblock %}

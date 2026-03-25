@@ -28,20 +28,20 @@
 
                         {% if success %}
                         <div class="alert alert-success text-center fw-bold" role="alert">
-                            Refill request submitted successfully!
+                            Refill request submitted 
                         </div>
                         {% endif %}
 
                         <div class="mb-4 bg-light p-3 rounded-3 border">
                             <label class="form-label small fw-bold text-muted text-uppercase">Patient</label>
                             <select class="form-select border-primary-subtle text-primary fw-bold shadow-sm" onchange="window.location.href=this.value;">
-                                <option value="{% url 'medication_refill' %}">👤 {{ patient.name }} (Self)</option>
+                                <option value="{% url 'medication_refill' %}">{{ patient.name }} (Self)</option>
                                 {% if dependents %}
                                     <optgroup label="My Dependents">
                                     {% for dep in dependents %}
                                         <option value="{% url 'medication_refill' %}?view_for={{ dep.userID }}" 
                                             {% if request.GET.view_for == dep.userID|stringformat:"s" %}selected{% endif %}>
-                                            👦 {{ dep.name }}
+                                             {{ dep.name }}
                                         </option>
                                     {% endfor %}
                                     </optgroup>
