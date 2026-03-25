@@ -100,10 +100,18 @@ def records(request):
     if not patient:
         return redirect('/login/')
 
+    dependents = User.objects.filter(parentID=patient)
 
-    patient_visits = Visit.objects.filter(patientID=patient)
+    view_for_id = request.GET.get('view_for')
+    viewed_patient = patient
+    if view_for_id:
+        dep = dependents.filter(userID=view_for_id).first()
+        if dep:
+            viewed_patient = dep
+
+    patient_visits = Visit.objects.filter(patientID=viewed_patient)
     recent_results = TestResult.objects.filter(
-        patientID=patient
+        patientID=viewed_patient
     ).order_by("-resultDate")[:5]
 
     recent_notes = DoctorNote.objects.filter(
@@ -111,13 +119,14 @@ def records(request):
     ).order_by("-createdAt")[:5]
 
     recent_documents = Record.objects.filter(
-        patientID=patient
+        patientID=viewed_patient
     ).order_by("-uploadedAt")[:5]
 
     recent_visits = patient_visits.order_by("-visitDate")[:5]
 
     context = {
         "patient": patient,
+        "dependents": dependents,
         "recent_results": recent_results,
         "recent_notes": recent_notes,
         "recent_documents": recent_documents,
@@ -213,29 +222,71 @@ def medications(request):
 
     return render(request, "careorbit/medications.html", context)
 
+# refill 
 def medication_refill(request):
     patient = get_current_patient(request)
     if not patient:
         return redirect('/login/')
 
-    medications = Medication.objects.filter(patientID=patient, needsRefill=True)
+    dependents = User.objects.filter(parentID=patient)
+
+    view_for_id = request.GET.get('view_for') or request.POST.get('view_for')
+    viewed_patient = patient
+    if view_for_id:
+        dep = dependents.filter(userID=view_for_id).first()
+        if dep:
+            viewed_patient = dep
+
+    success = False
+    if request.method == 'POST':
+        med_name = request.POST.get('medication')
+        if med_name:
+            Medication.objects.filter(patientID=viewed_patient, name=med_name).update(needsRefill=True)
+            success = True
+
+    medications = Medication.objects.filter(patientID=viewed_patient)
 
     context = {
         "patient": patient,
+        "viewed_patient": viewed_patient,
+        "dependents": dependents,
         "medications": medications,
+        "success": success,
     }
     return render(request, "careorbit/refill.html", context)
 
+# report 
 def medication_report(request):
     patient = get_current_patient(request)
     if not patient:
         return redirect('/login/')
 
-    medications = Medication.objects.filter(patientID=patient)
+    dependents = User.objects.filter(parentID=patient)
+
+    view_for_id = request.GET.get('view_for') or request.POST.get('view_for')
+    viewed_patient = patient
+    if view_for_id:
+        dep = dependents.filter(userID=view_for_id).first()
+        if dep:
+            viewed_patient = dep
+
+    success = False
+    if request.method == 'POST':
+        med_name = request.POST.get('medication')
+        symptom = request.POST.get('symptom')
+        severity = request.POST.get('severity')
+        started_date = request.POST.get('started_date')
+        if med_name and symptom and severity and started_date:
+            success = True
+
+    medications = Medication.objects.filter(patientID=viewed_patient)
 
     context = {
         "patient": patient,
+        "viewed_patient": viewed_patient,
+        "dependents": dependents,
         "medications": medications,
+        "success": success,
     }
 
     return render(request, "careorbit/report.html", context)
