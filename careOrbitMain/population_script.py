@@ -2,15 +2,15 @@ import os
 import sys
 import django
 from datetime import date, time, datetime
+from django.contrib.auth.hashers import make_password
+from careorbitapp.models import (
+    User, Appointment, Visit, Medication, Record, DoctorNote, TestResult
+)
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'careOrbitConfigs.settings')
 django.setup()
 
-from django.contrib.auth.hashers import make_password
-from careorbitapp.models import (
-    User, Appointment, Visit, Medication, Record, DoctorNote, TestResult
-)
 
 
 def clear_data():
@@ -314,8 +314,9 @@ def populate():
         uploadedAt=datetime(2025, 12, 12, 16, 0)
     )
 
+    print("Use for username : testpatient@gmail.com and password : password123 :)")
 
-print("Use for username : testpatient@gmail.com and password : password123 :)")
+
 
 if __name__ == '__main__':
     populate()
