@@ -1,14 +1,12 @@
-
-
 import json
-from django.http import HttpResponse, JsonResponse
-from datetime import datetime,date
+from django.http import JsonResponse
+from datetime import date
 from django.shortcuts import render, redirect
-from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.hashers import make_password, check_password
 from .models import User, Appointment,  Visit, TestResult, DoctorNote, Record, Medication
 
 
+# Login 
 def login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -30,12 +28,12 @@ def login(request):
     return render(request, 'careorbit/login.html')
 
 
-
+#Logout 
 def logout(request):
     request.session.flush()
     return redirect('/login/')
 
-
+#Sign up 
 def signup(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name', '').strip()
@@ -67,9 +65,11 @@ def signup(request):
         return redirect('/dashboard/')
     return render(request, 'careorbit/signup.html')
 
+# Forgot password
 def forgot_password(request):
     return render(request, 'careorbit/forgot_password.html')
 
+#dashboard
 def dashboard(request):
     if not request.session.get('user_id'):
         return redirect('/login/')
@@ -94,6 +94,7 @@ def dashboard(request):
 
     return render(request, "careorbit/dashboard.html", context)
 
+#All Records (Visits, Tests, Documents, Doctors Notes)
 def records(request):
     patient = get_current_patient(request)
     if not patient:
@@ -125,6 +126,7 @@ def records(request):
 
     return render(request, "careorbit/records.html", context)
 
+# Test Results
 def test_results(request):
     patient = get_current_patient(request)
     if not patient:
@@ -142,6 +144,7 @@ def test_results(request):
 
     return render(request, "careorbit/test_results.html", context)
 
+#Vists 
 def visit_history(request):
     patient = get_current_patient(request)
     if not patient:
@@ -156,6 +159,7 @@ def visit_history(request):
 
     return render(request, "careorbit/visit_history.html", context)
 
+#Doctors Notes
 def doctors_notes(request):
     patient = get_current_patient(request)
     if not patient:
@@ -172,6 +176,7 @@ def doctors_notes(request):
 
     return render(request, "careorbit/doctors_notes.html", context)
 
+#Documents
 def general_documents(request):
     patient = get_current_patient(request)
     if not patient:
@@ -190,6 +195,7 @@ def general_documents(request):
 
     return render(request, "careorbit/general_documents.html", context)
 
+# All Medication Views
 def medications(request):
     patient = get_current_patient(request)
     if not patient:
@@ -206,7 +212,6 @@ def medications(request):
     }
 
     return render(request, "careorbit/medications.html", context)
-
 
 def medication_refill(request):
     patient = get_current_patient(request)
@@ -235,6 +240,7 @@ def medication_report(request):
 
     return render(request, "careorbit/report.html", context)
 
+# All appointment views
 def appointments(request):
     patient = get_current_patient(request)
     if not patient:
@@ -346,7 +352,6 @@ def book_appointment(request):
 
 
 def get_available_slots(request):
-    # Returns booked time slots for a given date and doctor (used by book.js AJAX)
     selected_date = request.GET.get('date')
     doctor_id = request.GET.get('doctor')
 
@@ -362,63 +367,7 @@ def get_available_slots(request):
 
     return JsonResponse({'booked_slots': booked_slots})
 
-def dependents(request):
-    user_id = request.session.get('user_id')
-    patient = User.objects.filter(userID=user_id).first()
-
-    dependents_qs = User.objects.filter(parentID=patient)
-    dependents = []
-    
-    for dep in dependents_qs:
-        badges = []
-        
-        # Check medications for refills needed
-        if Medication.objects.filter(patientID=dep, needsRefill=True).exists():
-            badges.append({'text': 'REFILL NEEDED', 'class': 'border border-warning text-warning fw-bold small px-2 py-1 rounded bg-white'})
-            
-        # Check upcoming appointments
-        today = date.today()
-        upcoming = Appointment.objects.filter(patientID=dep, appointmentDate__gte=today).order_by('appointmentDate').first()
-        
-        if upcoming:
-            if upcoming.status == 'booked':
-                badges.append({'text': 'APPOINTMENT CONFIRMED', 'class': 'border border-success text-success fw-bold small px-2 py-1 rounded bg-white'})
-            elif upcoming.status == 'pending':
-                badges.append({'text': 'CHECKUP DUE', 'class': 'border border-primary text-primary fw-bold small px-2 py-1 rounded bg-white'})
-        else:
-            badges.append({'text': 'NO UPCOMING APPOINTMENTS', 'class': 'border border-secondary text-secondary fw-bold small px-2 py-1 rounded bg-white'})
-             
-        dependents.append({
-            'userID': dep.userID,
-            'name': dep.name,
-            'date_of_birth': dep.date_of_birth,
-            'nhsNumber': dep.nhsNumber if dep.nhsNumber else 'N/A',
-            'badges': badges
-        })
-
-    context = {
-        "patient": patient,
-        "dependents": dependents,
-    }
-
-    return render(request, "careorbit/dependents.html", context)
-
-def privacy_policy(request):
-    return render(request, "careorbit/private-policy.html")
-
-def terms_of_service(request):
-    return render(request, "careorbit/terms_of_service.html")
-
-def contact_us(request):
-    return render(request, "careorbit/contact_us.html")
-
-
-def get_current_patient(request):
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return None
-    return User.objects.filter(userID=user_id).first()
-
+# All appointment 
 def appointment_data(request):
     user_id = request.session.get('user_id')
     if not user_id:
@@ -478,7 +427,69 @@ def update_data(request):
 
     return JsonResponse({'medications': medications_list})
 
+# Footer Views
+
+def privacy_policy(request):
+    return render(request, "careorbit/private-policy.html")
+
+def terms_of_service(request):
+    return render(request, "careorbit/terms_of_service.html")
+
+def contact_us(request):
+    return render(request, "careorbit/contact_us.html")
+
+
+
+# Main Getter 
+def get_current_patient(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return None
+    return User.objects.filter(userID=user_id).first()
+
+
 # all related dependent views
+
+def dependents(request):
+    user_id = request.session.get('user_id')
+    patient = User.objects.filter(userID=user_id).first()
+
+    dependents_qs = User.objects.filter(parentID=patient)
+    dependents = []
+    
+    for dep in dependents_qs:
+        badges = []
+        
+        # Check medications for refills needed
+        if Medication.objects.filter(patientID=dep, needsRefill=True).exists():
+            badges.append({'text': 'REFILL NEEDED', 'class': 'border border-warning text-warning fw-bold small px-2 py-1 rounded bg-white'})
+            
+        # Check upcoming appointments
+        today = date.today()
+        upcoming = Appointment.objects.filter(patientID=dep, appointmentDate__gte=today).order_by('appointmentDate').first()
+        
+        if upcoming:
+            if upcoming.status == 'booked':
+                badges.append({'text': 'APPOINTMENT CONFIRMED', 'class': 'border border-success text-success fw-bold small px-2 py-1 rounded bg-white'})
+            elif upcoming.status == 'pending':
+                badges.append({'text': 'CHECKUP DUE', 'class': 'border border-primary text-primary fw-bold small px-2 py-1 rounded bg-white'})
+        else:
+            badges.append({'text': 'NO UPCOMING APPOINTMENTS', 'class': 'border border-secondary text-secondary fw-bold small px-2 py-1 rounded bg-white'})
+             
+        dependents.append({
+            'userID': dep.userID,
+            'name': dep.name,
+            'date_of_birth': dep.date_of_birth,
+            'nhsNumber': dep.nhsNumber if dep.nhsNumber else 'N/A',
+            'badges': badges
+        })
+
+    context = {
+        "patient": patient,
+        "dependents": dependents,
+    }
+
+    return render(request, "careorbit/dependents.html", context)
 
 def add_dependent(request):
     if request.method == 'POST':
