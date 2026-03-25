@@ -2,58 +2,76 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - report
+    CareOrbit - Report Abnormality
 {% endblock %}
 
 {% block body_block %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    
+                    <div class="text-center mb-4">
+                        <div class="bg-danger-subtle text-danger rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 60px; height: 60px;">
+                            <span class="fs-3">⚠️</span>
+                        </div>
+                        <h3 class="fw-bold text-dark">Report Abnormality</h3>
+                        <p class="text-muted small">Experiencing side effects? Log them here so your doctor can review your current prescriptions.</p>
+                    </div>
 
-<div class="login-wrapper">
-    <div class="login-card">
+                    <form method="POST" action="{% url 'medication_report' %}">
+                        {% csrf_token %}
 
-        <h2>Report Abnormality</h2>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Medication</label>
+                            <select class="form-select bg-light" name="medication" required>
+                                <option value="">Select a medication...</option>
+                                {% for med in medications %}
+                                    <option value="{{ med.name }}">{{ med.name }} {{ med.dosage }}</option>
+                                {% empty %}
+                                    <option value="" disabled>No active medications found.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-        <form method="POST" action="{% url 'medication_report' %}">
-            {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Symptom Description</label>
+                            <textarea class="form-control bg-light" name="symptom" rows="3" placeholder="Describe the symptom or abnormality you experienced..." required></textarea>
+                        </div>
 
-            <div class="form-group">
-                <label>MEDICATION</label>
-                <select name="medication">
-                    <option value="">Select a medication</option>
-                    <option value="metformin">Metformin 500mg</option>
-                    <option value="sertraline">Sertraline 50mg</option>
-                    <option value="cetirizine">Cetirizine 10mg</option>
-                    <option value="amoxicillin">Amoxicillin 250mg</option>
-                </select>
-            </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Severity Level</label>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-success flex-fill fw-bold severity-btn" id="btn-mild" onclick="setSeverity('mild')">Mild</button>
+                                <button type="button" class="btn btn-outline-warning flex-fill fw-bold severity-btn" id="btn-moderate" onclick="setSeverity('moderate')">Moderate</button>
+                                <button type="button" class="btn btn-outline-danger flex-fill fw-bold severity-btn" id="btn-severe" onclick="setSeverity('severe')">Severe</button>
+                            </div>
+                            <input type="hidden" name="severity" id="severity" value="" required>
+                        </div>
 
-            <div class="form-group">
-                <label>SYMPTOM DESCRIPTION</label>
-                <textarea name="symptom" rows="3" placeholder="Describe the symptom or abnormality you experienced..."></textarea>
-            </div>
+                        <div class="mb-5">
+                            <label class="form-label small fw-bold text-muted text-uppercase">When did it start?</label>
+                            <input type="date" class="form-control bg-light" name="started_date" required>
+                        </div>
 
-            <div class="form-group">
-                <label>SEVERITY LEVEL</label>
-                <div class="severity-group">
-                    <button type="button" class="severity-btn" id="severity-mild" onclick="setSeverity('mild')">Mild</button>
-                    <button type="button" class="severity-btn" id="severity-moderate" onclick="setSeverity('moderate')">Moderate</button>
-                    <button type="button" class="severity-btn severity-btn-severe" id="severity-severe" onclick="setSeverity('severe')">Severe</button>
+                        <button type="submit" class="btn btn-danger w-100 py-3 fw-bold shadow-sm rounded-3">
+                            Submit Report
+                        </button>
+
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <a href="{% url 'medications' %}" class="text-muted text-decoration-none small fw-bold hover-primary">
+                            ← Back to Medications
+                        </a>
+                    </div>
+
                 </div>
-                <input type="hidden" name="severity" id="severity" value="">
             </div>
 
-            <div class="form-group">
-                <label>WHEN DID IT START</label>
-                <input type="date" name="started_date">
-            </div>
-
-            <button type="submit" class="btn-login">Submit Report</button>
-
-        </form>
-
-        <p class="signup-prompt">
-            <a href="{% url 'medications' %}">← Back to Medications</a>
-        </p>
-
+        </div>
     </div>
 </div>
 

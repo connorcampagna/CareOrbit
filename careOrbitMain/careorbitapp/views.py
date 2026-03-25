@@ -306,25 +306,25 @@ def book_appointment(request):
         #validation
         if not preferred_date:
             context["error"] = "Please select a date."
-            return render(request, "careorbit/book.html", context)
+            return render(request, "careorbit/book_appointment.html", context)
 
         if not selected_slot:
             context["error"] = "Please select a time slot."
-            return render(request, "careorbit/book.html", context)
+            return render(request, "careorbit/book_appointment.html", context)
 
         if not visit_type:
             context["error"] = "Please select visit type."
-            return render(request, "careorbit/book.html", context)
+            return render(request, "careorbit/book_appointment.html", context)
 
         if not doctor_id:
             context["error"] = "Please select a doctor."
-            return render(request, "careorbit/book.html", context)
+            return render(request, "careorbit/book_appointment.html", context)
         
         #handle other reasoning 
         if reason == 'other':
             if not other_description:
                 context["error"] = "Please describe your reason."
-                return render(request, "careorbit/book.html", context)
+                return render(request, "careorbit/book_appointment.html", context)
             appointment_reason = other_description
         else:
             appointment_reason = reason
@@ -333,7 +333,7 @@ def book_appointment(request):
             selected_doctor = User.objects.get(userID=doctor_id, role='doctor')
         except User.DoesNotExist:
             context["error"] = "Invalid doctor."
-            return render(request, "careorbit/book.html", context)
+            return render(request, "careorbit/book_appointment.html", context)
         
         Appointment.objects.create(
             patientID=patient,
@@ -346,9 +346,9 @@ def book_appointment(request):
         )
 
         context["success"] = "Appointment booked successfully"
-        return render(request, "careorbit/book.html", context)
+        return render(request, "careorbit/book_appointment.html", context)
 
-    return render(request, "careorbit/book.html", context)
+    return render(request, "careorbit/book_appointment.html", context)
 
 
 def get_available_slots(request):
@@ -622,4 +622,30 @@ def delete_dependent(request):
             return JsonResponse({'status': 'success'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+def profile(request):
+    patient = get_current_patient(request)
+    if not patient:
+        return redirect('/login/')
+
+    context = {
+        "patient": patient
+    }
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        dob = request.POST.get('dob')
+        phone = request.POST.get('phone', '').strip()
+        nhs = request.POST.get('nhs', '').strip()
+
+        if name:
+            patient.name = name
+        if dob:
+            patient.date_of_birth = dob
+        patient.phoneNumber = phone
+        patient.nhsNumber = nhs if nhs else None
+        patient.save()
+        context["success"] = "Profile updated successfully!"
+    return render(request, "careorbit/profile.html", context)
  

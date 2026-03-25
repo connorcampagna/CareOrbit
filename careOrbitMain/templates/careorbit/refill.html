@@ -2,59 +2,75 @@
 {% load static %}
 
 {% block title_block %}
-    CareOrbit - refill
+    CareOrbit - Request Refill
 {% endblock %}
 
 {% block body_block %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    
+                    <div class="text-center mb-4">
+                        <div class="bg-warning-subtle text-warning-emphasis rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 60px; height: 60px;">
+                            <span class="fs-3">💊</span>
+                        </div>
+                        <h3 class="fw-bold text-dark">Request a Refill</h3>
+                        <p class="text-muted small">Running low? Request a prescription top-up from your healthcare provider.</p>
+                    </div>
 
-<div class="login-wrapper">
-    <div class="login-card">
+                    <form method="POST" action="{% url 'medication_refill' %}">
+                        {% csrf_token %}
 
-        <h2>Request Refill</h2>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Medication</label>
+                            <select class="form-select bg-light" name="medication" required>
+                                <option value="">Select a medication...</option>
+                                {% for med in medications %}
+                                    <option value="{{ med.name }}">{{ med.name }} {{ med.dosage }}</option>
+                                {% empty %}
+                                    <option value="" disabled>No active medications found.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-        <form method="POST" action="{% url 'medication_refill' %}">
-            {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Quantity Needed</label>
+                            <select class="form-select bg-light" name="quantity" required>
+                                <option value="28">28 tablets (1 month)</option>
+                                <option value="56">56 tablets (2 months)</option>
+                                <option value="84">84 tablets (3 months)</option>
+                            </select>
+                        </div>
 
-            <!-- Hardcoded for now-->
-            <div class="form-group">
-                <label>MEDICATION</label>
-                <select name="medication">
-                    <option value="">Select a medication</option>
-                    <option value="metformin">Metformin 500mg</option>
-                    <option value="sertraline">Sertraline 50mg</option>
-                    <option value="cetirizine">Cetirizine 10mg</option>
-                    <option value="amoxicillin">Amoxicillin 250mg</option>
-                </select>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Preferred Pharmacy</label>
+                            <input type="text" class="form-control bg-light" name="pharmacy" placeholder="Enter pharmacy name or address" required>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Additional Notes (Optional)</label>
+                            <textarea class="form-control bg-light" name="notes" rows="3" placeholder="Any additional information for your doctor..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100 py-3 fw-bold text-dark shadow-sm rounded-3">
+                            Submit Refill Request
+                        </button>
+
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <a href="{% url 'medications' %}" class="text-muted text-decoration-none small fw-bold hover-primary">
+                            ← Back to Medications
+                        </a>
+                    </div>
+
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>QUANTITY NEEDED</label>
-                <select name="quantity">
-                    <option value="28">28 tablets</option>
-                    <option value="56">56 tablets</option>
-                    <option value="84">84 tablets</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>PREFERRED PHARMACY</label>
-                <input type="text" name="pharmacy" placeholder="Enter pharmacy name or address">
-            </div>
-
-            <div class="form-group">
-                <label>ADDITIONAL NOTES</label>
-                <textarea name="notes" rows="3" placeholder="Any additional information..."></textarea>
-            </div>
-
-            <button type="submit" class="btn-login">Submit Refill Request</button>
-
-        </form>
-
-        <p class="signup-prompt">
-            <a href="{% url 'medications' %}">← Back to Medications</a>
-        </p>
-
+        </div>
     </div>
 </div>
-
 {% endblock %}
