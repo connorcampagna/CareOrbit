@@ -307,8 +307,17 @@ def appointments(request):
     if not patient:
         return redirect('/login/')
 
+    dependents = User.objects.filter(parentID=patient)
+
+    view_for_id = request.GET.get('view_for')
+    viewed_patient = patient
+    if view_for_id:
+        dep = dependents.filter(userID=view_for_id).first()
+        if dep:
+            viewed_patient = dep
+
     upcoming = Appointment.objects.filter(
-        patientID=patient,
+        patientID=viewed_patient,
         appointmentDate__gte=date.today(),
         status='booked'
     ).order_by('appointmentDate', 'appointmentTime')
@@ -317,16 +326,17 @@ def appointments(request):
     for appt in upcoming:
         appointments_list.append({
             "id": appt.appointmentID,
-            "title": appt.appointmentReason,
-            "date": appt.appointmentDate.strftime('%d %b %Y'),
-            "time": appt.appointmentTime.strftime('%H:%M'),
-            "doctor": appt.doctorID.name,
-            "location": "Virtual" if appt.visitType == 'virtual' else "Clinic",
-            "notes": "",
+            "appointmentReason": appt.appointmentReason,
+            "appointmentDate": appt.appointmentDate,
+            "appointmentTime": appt.appointmentTime,
+            "doctorID": appt.doctorID,
+            "visitType": appt.visitType,
+            "get_visitType_display": "Virtual" if appt.visitType == 'virtual' else "In-Person",
         })
 
     context = {
         "patient": patient,
+        "dependents": dependents, 
         "appointments": appointments_list,
     }
     return render(request, "careorbit/appointments.html", context)
@@ -352,19 +362,31 @@ def book_appointment(request):
         return redirect('/login/')
 
     doctors = User.objects.filter(role='doctor')
+    
+    dependents = User.objects.filter(parentID=patient)
+    
     context = {
         "patient": patient,
+        "dependents": dependents,
         "doctors": doctors,
     }
 
     if request.method == 'POST':
+        selected_patient_id = request.POST.get('patient_id')
+        booked_for_patient = patient 
+        
+        if selected_patient_id and selected_patient_id != 'self':
+            dep = dependents.filter(userID=selected_patient_id).first()
+            if dep:
+                booked_for_patient = dep
+
         reason = request.POST.get('reason')
         other_description = request.POST.get('other_description')
         visit_type = request.POST.get('visit_type')
         preferred_date = request.POST.get('date')
         doctor_id = request.POST.get('doctor')
         selected_slot = request.POST.get('selected_slot')
-        #validation
+        
         if not preferred_date:
             context["error"] = "Please select a date."
             return render(request, "careorbit/book_appointment.html", context)
@@ -381,7 +403,6 @@ def book_appointment(request):
             context["error"] = "Please select a doctor."
             return render(request, "careorbit/book_appointment.html", context)
         
-        #handle other reasoning 
         if reason == 'other':
             if not other_description:
                 context["error"] = "Please describe your reason."
@@ -397,7 +418,7 @@ def book_appointment(request):
             return render(request, "careorbit/book_appointment.html", context)
         
         Appointment.objects.create(
-            patientID=patient,
+            patientID=booked_for_patient, 
             doctorID=selected_doctor,
             appointmentReason=appointment_reason,
             visitType=visit_type,
