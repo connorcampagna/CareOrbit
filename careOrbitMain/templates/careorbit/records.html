@@ -129,6 +129,17 @@ CareOrbit - Records
     </div>
 
 </div>
-
-<script src="{% static 'js/searchbar.js' %}"></script>
+<script src="{% static 'js/records.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const hash = window.location.hash;
+        if (hash) {
+            const tabBtn = document.querySelector('[data-bs-target="' + hash + '"]');
+            if (tabBtn) {
+                const tab = new bootstrap.Tab(tabBtn);
+                tab.show();
+            }
+        }
+    });
+</script>
 {% endblock %}
