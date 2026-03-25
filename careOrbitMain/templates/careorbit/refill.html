@@ -23,6 +23,25 @@
 
                     <form method="POST" action="{% url 'medication_refill' %}">
                         {% csrf_token %}
+                        
+                        <input type="hidden" name="view_for" value="{{ request.GET.view_for|default:'' }}">
+
+                        <div class="mb-4 bg-light p-3 rounded-3 border">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Patient</label>
+                            <select class="form-select border-primary-subtle text-primary fw-bold shadow-sm" onchange="window.location.href=this.value;">
+                                <option value="{% url 'medication_refill' %}">👤 {{ patient.name }} (Self)</option>
+                                {% if dependents %}
+                                    <optgroup label="My Dependents">
+                                    {% for dep in dependents %}
+                                        <option value="{% url 'medication_refill' %}?view_for={{ dep.userID }}" 
+                                            {% if request.GET.view_for == dep.userID|stringformat:"s" %}selected{% endif %}>
+                                            👦 {{ dep.name }}
+                                        </option>
+                                    {% endfor %}
+                                    </optgroup>
+                                {% endif %}
+                            </select>
+                        </div>
 
                         <div class="mb-4">
                             <label class="form-label small fw-bold text-muted text-uppercase">Medication</label>
@@ -31,7 +50,7 @@
                                 {% for med in medications %}
                                     <option value="{{ med.name }}">{{ med.name }} {{ med.dosage }}</option>
                                 {% empty %}
-                                    <option value="" disabled>No active medications found.</option>
+                                    <option value="" disabled>No active medications found for this patient.</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -58,7 +77,6 @@
                         <button type="submit" class="btn btn-warning w-100 py-3 fw-bold text-dark shadow-sm rounded-3">
                             Submit Refill Request
                         </button>
-
                     </form>
 
                     <div class="text-center mt-4">
