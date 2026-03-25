@@ -1,4 +1,5 @@
 import json
+import random
 from django.http import JsonResponse
 from datetime import date
 from django.shortcuts import render, redirect
@@ -325,7 +326,7 @@ def appointments(request):
     appointments_list = []
     for appt in upcoming:
         appointments_list.append({
-            "id": appt.appointmentID,
+            "appointmentID": appt.appointmentID,
             "appointmentReason": appt.appointmentReason,
             "appointmentDate": appt.appointmentDate,
             "appointmentTime": appt.appointmentTime,
@@ -400,9 +401,18 @@ def book_appointment(request):
             return render(request, "careorbit/book_appointment.html", context)
 
         if not doctor_id:
-            context["error"] = "Please select a doctor."
-            return render(request, "careorbit/book_appointment.html", context)
-        
+            doctor_list = list(doctors)
+            if not doctor_list:
+                context["error"] = "No doctors are available."
+                return render(request, "careorbit/book_appointment.html", context)
+            selected_doctor = random.choice(doctor_list)
+        else:
+            try:
+                selected_doctor = User.objects.get(userID=doctor_id, role='doctor')
+            except User.DoesNotExist:
+                context["error"] = "Invalid doctor."
+                return render(request, "careorbit/book_appointment.html", context)
+
         if reason == 'other':
             if not other_description:
                 context["error"] = "Please describe your reason."
@@ -410,12 +420,6 @@ def book_appointment(request):
             appointment_reason = other_description
         else:
             appointment_reason = reason
-        
-        try:
-            selected_doctor = User.objects.get(userID=doctor_id, role='doctor')
-        except User.DoesNotExist:
-            context["error"] = "Invalid doctor."
-            return render(request, "careorbit/book_appointment.html", context)
         
         Appointment.objects.create(
             patientID=booked_for_patient, 
@@ -427,8 +431,7 @@ def book_appointment(request):
             status='booked'
         )
 
-        context["success"] = "Appointment booked successfully"
-        return render(request, "careorbit/book_appointment.html", context)
+        return redirect('/appointments/')
 
     return render(request, "careorbit/book_appointment.html", context)
 

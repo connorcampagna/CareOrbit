@@ -29,14 +29,14 @@ CareOrbit - Book Appointment
                             <label class="form-label small fw-bold text-muted text-uppercase">Patient</label>
                             <select class="form-select border-primary-subtle text-primary fw-bold shadow-sm" name="patient_id" required>
                                 <option value="self" {% if not request.GET.view_for %}selected{% endif %}>
-                                    👤 {% if patient %}{{ patient.name }}{% else %}Myself{% endif %}
+                                     {% if patient %}{{ patient.name }}{% else %}Myself{% endif %}
                                 </option>
                                 
                                 {% if dependents %}
                                     <optgroup label="My Dependents">
                                     {% for dep in dependents %}
                                         <option value="{{ dep.userID }}" {% if request.GET.view_for == dep.userID|stringformat:"s" %}selected{% endif %}>
-                                            👦 {{ dep.name }}
+                                             {{ dep.name }}
                                         </option>
                                     {% endfor %}
                                     </optgroup>
@@ -47,11 +47,11 @@ CareOrbit - Book Appointment
                         <div class="mb-4">
                             <label class="form-label small fw-bold text-muted text-uppercase">Reason for Visit</label>
                             <select class="form-select" name="reason" id="reason" onchange="toggleOtherBox()">
-                                <option value="general">General Checkup</option>
-                                <option value="dental">Dental Checkup</option>
-                                <option value="followup">Follow Up</option>
-                                <option value="results">Test Results</option>
-                                <option value="other">Other</option>
+                                <option value="General">General Checkup</option>
+                                <option value="Dental">Dental Checkup</option>
+                                <option value="Follow Up">Follow Up</option>
+                                <option value="Results">Test Results</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
 

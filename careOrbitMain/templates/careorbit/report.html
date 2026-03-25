@@ -100,4 +100,16 @@
     </div>
 </div>
 
+<script>
+
+// sets severity level 
+function setSeverity(level) {
+    document.getElementById('severity').value = level;
+    document.querySelectorAll('.severity-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+    document.getElementById('btn-' + level).classList.add('active');
+}
+</script>
+
 {% endblock %}

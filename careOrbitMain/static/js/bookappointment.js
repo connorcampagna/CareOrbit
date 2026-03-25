@@ -2,6 +2,10 @@
 
 var time_slots = ['09:00', '10:30', '12:00', '14:00', '15:30', '16:30'];
 
+// makes sure cant book in past
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('preferred-date').setAttribute('min', today);
+
 function toggleOtherBox() {
     var reason = document.getElementById('reason').value;
     document.getElementById('other-box').style.display = (reason === 'other') ? 'block' : 'none';
@@ -26,7 +30,8 @@ function updateSlots() {
         .then(function (r) { return r.json(); })
         .then(function (data) { renderSlots(data.booked_slots || []); })
         .catch(function () {
-            container.innerHTML = '<div class="alert alert-danger w-100 py-2">Could not load slots. Please try again.</div>';        });
+            container.innerHTML = '<div class="alert alert-danger w-100 py-2">Could not load slots. Please try again.</div>';
+        });
 }
 
 function renderSlots(bookedSlots) {
@@ -39,10 +44,10 @@ function renderSlots(bookedSlots) {
 
         var btn = document.createElement('button');
         btn.type = 'button';
-        
+
         btn.className = 'btn fw-bold py-2 px-4 slot-btn flex-grow-1 ' + (taken ? 'btn-light text-muted border opacity-50' : 'btn-outline-primary shadow-sm');
-        btn.disabled = taken; 
-        
+        btn.disabled = taken;
+
         btn.innerHTML = taken ? '<s>' + slot + '</s>' : slot;
 
         if (!taken) {
@@ -60,10 +65,10 @@ function selectSlot(el) {
         btn.classList.replace('btn-primary', 'btn-outline-primary');
         btn.classList.add('shadow-sm');
     });
-    
+
     el.classList.replace('btn-outline-primary', 'btn-primary');
     el.classList.remove('shadow-sm');
-        document.getElementById('selected_slot').value = el.getAttribute('data-slot');
+    document.getElementById('selected_slot').value = el.getAttribute('data-slot');
 }
 
 

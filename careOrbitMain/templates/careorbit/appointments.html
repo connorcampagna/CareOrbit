@@ -24,14 +24,14 @@ CareOrbit - Appointments
     <div class="row mb-4">
         <div class="col-md-5 col-lg-4">
             <select class="form-select form-select-lg shadow-sm fw-bold text-primary bg-white border-primary-subtle" onchange="window.location.href=this.value;">
-                <option value="{% url 'appointments' %}">👤 {% if patient %}{{ patient.name }}{% else %}My Appointments{% endif %} (Self)</option>
+                <option value="{% url 'appointments' %}"> {% if patient %}{{ patient.name }}{% else %}My Appointments{% endif %} (Self)</option>
                 
                 {% if dependents %}
                     <optgroup label="My Dependents">
                     {% for dep in dependents %}
                         <option value="{% url 'appointments' %}?view_for={{ dep.userID }}" 
                             {% if request.GET.view_for == dep.userID|stringformat:"s" %}selected{% endif %}>
-                            👦 {{ dep.name }}
+                             {{ dep.name }}
                         </option>
                     {% endfor %}
                     </optgroup>
@@ -66,7 +66,7 @@ CareOrbit - Appointments
                         <div class="row text-muted small">
                             <div class="col-sm-6 mb-3 mb-sm-0">
                                 <span class="d-block text-uppercase fw-bold text-dark mb-1">Doctor</span>
-                                Dr. {{ appointment.doctorID.name }}
+                                 {{ appointment.doctorID.name }}
                             </div>
                         </div>
 
