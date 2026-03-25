@@ -1,3 +1,5 @@
+// implements search bar functionality wihtin records page and quick
+
 function filterRecords() {
     const input = document.getElementById('search-input');
     const filter = input.value.toLowerCase();
@@ -22,3 +24,15 @@ function filterRecords() {
     }
 
 }
+
+// go to specific tab
+ document.addEventListener('DOMContentLoaded', function () {
+        const hash = window.location.hash;
+        if (hash) {
+            const tabBtn = document.querySelector('[data-bs-target="' + hash + '"]');
+            if (tabBtn) {
+                const tab = new bootstrap.Tab(tabBtn);
+                tab.show();
+            }
+        }
+    });
