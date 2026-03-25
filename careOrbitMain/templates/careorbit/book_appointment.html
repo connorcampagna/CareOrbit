@@ -44,14 +44,12 @@ CareOrbit - Book Appointment
                         <div class="mb-4">
                             <label class="form-label small fw-bold text-muted text-uppercase">Visit Type</label>
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-outline-primary flex-fill visit-btn visit-btn-active" id="btn-inperson" onclick="selectVisitType('in-person')">
-                                    👤 In-Person
-                                </button>
-                                <button type="button" class="btn btn-outline-primary flex-fill visit-btn" id="btn-virtual" onclick="selectVisitType('virtual')">
-                                    🖥 Virtual
-                                </button>
+                                <input type="radio" class="btn-check" name="visit_type" id="btn-inperson" value="in_person" checked>
+                                <label class="btn btn-outline-primary flex-fill" for="btn-inperson">👤 In-Person</label>
+
+                                <input type="radio" class="btn-check" name="visit_type" id="btn-virtual" value="virtual">
+                                <label class="btn btn-outline-primary flex-fill" for="btn-virtual">🖥 Virtual</label>
                             </div>
-                            <input type="hidden" name="visit_type" id="visit_type" value="in-person">
                         </div>
 
                         <div class="row g-3 mb-4">
@@ -63,9 +61,9 @@ CareOrbit - Book Appointment
                                 <label class="form-label small fw-bold text-muted text-uppercase">Preferred Doctor (Optional)</label>
                                 <select class="form-select" name="doctor" id="preferred-doctor" onchange="updateSlots()">
                                     <option value="">No Preference</option>
-                                    <option value="smith">Dr. Gregory House - GP</option>
-                                    <option value="brown">Dr. Tim Whatley - Dentist</option>
-                                    <option value="jones">Dr. James Wilson - Specialist</option>
+                                    {% for doctor in doctors %}
+                                    <option value="{{ doctor.userID }}"> {{ doctor.name }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -102,5 +100,5 @@ CareOrbit - Book Appointment
     </div>
 </div>
 
-
+<script src="{% static 'js/bookappointment.js' %}"></script>
 {% endblock %}

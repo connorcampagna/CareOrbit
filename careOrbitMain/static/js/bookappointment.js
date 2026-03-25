@@ -1,17 +1,10 @@
-// book appointment features 
-
+// book appointment features
 
 var time_slots = ['09:00', '10:30', '12:00', '14:00', '15:30', '16:30'];
 
 function toggleOtherBox() {
     var reason = document.getElementById('reason').value;
     document.getElementById('other-box').style.display = (reason === 'other') ? 'block' : 'none';
-}
-
-function selectVisitType(type) {
-    document.getElementById('visit_type').value = type;
-    document.getElementById('btn-inperson').className = (type === 'in_person') ? 'visit-btn visit-btn-active' : 'visit-btn';
-    document.getElementById('btn-virtual').className = (type === 'virtual') ? 'visit-btn visit-btn-active' : 'visit-btn';
 }
 
 function updateSlots() {

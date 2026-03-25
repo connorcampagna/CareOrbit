@@ -210,12 +210,22 @@ def medications(request):
     if not patient:
         return redirect('/login/')
 
+    dependents = User.objects.filter(parentID=patient)
 
-    meds = Medication.objects.filter(patientID=patient).order_by("-prescribedAt")
+    view_for_id = request.GET.get('view_for')
+    viewed_patient = patient
+    if view_for_id:
+        dep = dependents.filter(userID=view_for_id).first()
+        if dep:
+            viewed_patient = dep
+
+    meds = Medication.objects.filter(patientID=viewed_patient).order_by("-prescribedAt")
     refill_needed = meds.filter(needsRefill=True)
 
     context = {
         "patient": patient,
+        "viewed_patient": viewed_patient,
+        "dependents": dependents,
         "medications": meds,
         "refill_needed": refill_needed,
     }
