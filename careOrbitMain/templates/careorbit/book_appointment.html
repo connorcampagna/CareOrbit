@@ -25,6 +25,25 @@ CareOrbit - Book Appointment
                     <form method="POST" action="{% url 'book_appointment' %}">
                         {% csrf_token %}
 
+                        <div class="mb-4 bg-light p-3 rounded-3 border">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Patient</label>
+                            <select class="form-select border-primary-subtle text-primary fw-bold shadow-sm" name="patient_id" required>
+                                <option value="self" {% if not request.GET.view_for %}selected{% endif %}>
+                                    👤 {% if patient %}{{ patient.name }}{% else %}Myself{% endif %}
+                                </option>
+                                
+                                {% if dependents %}
+                                    <optgroup label="My Dependents">
+                                    {% for dep in dependents %}
+                                        <option value="{{ dep.userID }}" {% if request.GET.view_for == dep.userID|stringformat:"s" %}selected{% endif %}>
+                                            👦 {{ dep.name }}
+                                        </option>
+                                    {% endfor %}
+                                    </optgroup>
+                                {% endif %}
+                            </select>
+                        </div>
+
                         <div class="mb-4">
                             <label class="form-label small fw-bold text-muted text-uppercase">Reason for Visit</label>
                             <select class="form-select" name="reason" id="reason" onchange="toggleOtherBox()">
@@ -72,7 +91,7 @@ CareOrbit - Book Appointment
                         
                         <hr class="text-muted opacity-25 my-4">
 
-                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-5 shadow-sm">
+                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-5 shadow-sm rounded-pill">
                             Confirm Booking →
                         </button>
                     </form>
@@ -92,7 +111,7 @@ CareOrbit - Book Appointment
                         <p class="mb-0">Select a date and doctor to see available times.</p>
                     </div>
 
-                    <div id="slots-container" class="d-flex flex-wrap gap-2"></div>
+                    <div id="slots-container" class="d-flex flex-column gap-2"></div>                
                 </div>
             </div>
         </div>

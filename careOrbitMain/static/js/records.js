@@ -8,7 +8,7 @@ function filterRecords() {
     
     if (!activeTab) return;
     
-    const rows = activeTab.querySelectorAll('.record-row');
+    const rows = activeTab.querySelectorAll('.list-group-item');
     let visibleCount = 0;
 
     rows.forEach(row => {

@@ -26,8 +26,7 @@ function updateSlots() {
         .then(function (r) { return r.json(); })
         .then(function (data) { renderSlots(data.booked_slots || []); })
         .catch(function () {
-            container.innerHTML = '<p style="color:red; font-size:0.9rem">Could not load slots.</p>';
-        });
+            container.innerHTML = '<div class="alert alert-danger w-100 py-2">Could not load slots. Please try again.</div>';        });
 }
 
 function renderSlots(bookedSlots) {
@@ -38,28 +37,33 @@ function renderSlots(bookedSlots) {
         var slot = time_slots[i];
         var taken = bookedSlots.indexOf(slot) !== -1;
 
-        var div = document.createElement('div');
-        div.className = 'slot-row' + (taken ? ' slot-unavailable' : '');
-        div.innerHTML = '<span class="slot-time">' + slot + '</span><span class="slot-status">' + (taken ? 'Unavailable' : 'Available') + '</span>';
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        
+        btn.className = 'btn fw-bold py-2 px-4 slot-btn flex-grow-1 ' + (taken ? 'btn-light text-muted border opacity-50' : 'btn-outline-primary shadow-sm');
+        btn.disabled = taken; 
+        
+        btn.innerHTML = taken ? '<s>' + slot + '</s>' : slot;
 
         if (!taken) {
-            div.setAttribute('data-slot', slot);
-            div.onclick = function () { selectSlot(this); };
+            btn.setAttribute('data-slot', slot);
+            btn.onclick = function () { selectSlot(this); };
         }
 
-        container.appendChild(div);
+        container.appendChild(btn);
     }
 }
 
 function selectSlot(el) {
-    document.querySelectorAll('.slot-row').forEach(function (row) {
-        row.classList.remove('slot-selected');
-        var s = row.querySelector('.slot-status');
-        if (s && !row.classList.contains('slot-unavailable')) s.textContent = 'Available';
+    // 1. Reset all available buttons back to blue outlines and restore their shadow
+    document.querySelectorAll('.slot-btn:not(:disabled)').forEach(function (btn) {
+        btn.classList.replace('btn-primary', 'btn-outline-primary');
+        btn.classList.add('shadow-sm');
     });
-    el.classList.add('slot-selected');
-    el.querySelector('.slot-status').textContent = 'Selected ✓';
-    document.getElementById('selected_slot').value = el.getAttribute('data-slot');
+    
+    el.classList.replace('btn-outline-primary', 'btn-primary');
+    el.classList.remove('shadow-sm');
+        document.getElementById('selected_slot').value = el.getAttribute('data-slot');
 }
 
 
