@@ -7,115 +7,128 @@ CareOrbit - Records
 
 {% block body_block %}
 <div class="container py-4">
+    
     <div class="mb-4">
         <h2 class="fw-bold mb-1">Medical Records</h2>
-        <p class="text-muted">Access your test results, visit history, and clinical documentation.</p>
+        <p class="text-muted">Access test results, visit history, and clinical documentation.</p>
     </div>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-        <div class="bg-light px-3 py-2 rounded border">
-            <span class="text-muted small fw-bold" id="records-count">Showing All Records</span>
+    <div class="row mb-4 g-3 align-items-center">
+        
+        <div class="col-md-5 col-lg-4">
+            <select class="form-select form-select-lg shadow-sm fw-bold text-primary bg-white border-primary-subtle" onchange="window.location.href=this.value;">
+                <option value="{% url 'records' %}">👤 My Records (Self)</option>
+                
+                {% if dependents %}
+                    <optgroup label="My Dependents">
+                    {% for dep in dependents %}
+                        <option value="{% url 'records' %}?view_for={{ dep.userID }}" 
+                            {% if request.GET.view_for == dep.userID|stringformat:"s" %}selected{% endif %}>
+                            👦 {{ dep.name }}
+                        </option>
+                    {% endfor %}
+                    </optgroup>
+                {% endif %}
+            </select>
         </div>
-        <div class="position-relative">
-            <input type="text" id="search-input" class="form-control ps-5" placeholder="Search records..."
-                onkeyup="filterRecords()">
-            <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">🔍</span>
+
+        <div class="col-md-7 col-lg-8">
+            <div class="position-relative">
+                <input type="text" id="search-input" class="form-control form-control-lg ps-5 shadow-sm border-0" placeholder="Search records..." onkeyup="filterRecords()">
+                <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted fs-5">🔍</span>
+            </div>
         </div>
+        
     </div>
 
     <ul class="nav nav-tabs mb-4 border-bottom-0" id="recordTabs" role="tablist">
         <li class="nav-item">
-            <button class="nav-link active fw-bold text-uppercase px-4" id="test-results-tab" data-bs-toggle="tab"
-                data-bs-target="#test-results" type="button" role="tab">Test Results</button>
+            <button class="nav-link active fw-bold text-uppercase px-4" id="test-results-tab" data-bs-toggle="tab" data-bs-target="#test-results" type="button" role="tab">Test Results</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link fw-bold text-uppercase px-4" id="visit-history-tab" data-bs-toggle="tab"
-                data-bs-target="#visit-history" type="button" role="tab">Visit History</button>
+            <button class="nav-link fw-bold text-uppercase px-4 text-secondary" id="visit-history-tab" data-bs-toggle="tab" data-bs-target="#visit-history" type="button" role="tab">Visit History</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link fw-bold text-uppercase px-4" id="doctors-notes-tab" data-bs-toggle="tab"
-                data-bs-target="#doctors-notes" type="button" role="tab">Doctor's Notes</button>
+            <button class="nav-link fw-bold text-uppercase px-4 text-secondary" id="doctors-notes-tab" data-bs-toggle="tab" data-bs-target="#doctors-notes" type="button" role="tab">Doctor's Notes</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link fw-bold text-uppercase px-4" id="general-docs-tab" data-bs-toggle="tab"
-                data-bs-target="#general-docs" type="button" role="tab">Documents</button>
+            <button class="nav-link fw-bold text-uppercase px-4 text-secondary" id="general-docs-tab" data-bs-toggle="tab" data-bs-target="#general-docs" type="button" role="tab">Documents</button>
         </li>
     </ul>
 
-    <div class="tab-content" id="recordTabsContent">
-
-        <!-- Test Results -->
+    <div class="tab-content bg-white p-4 rounded-4 shadow-sm" id="recordTabsContent">
+        
         <div class="tab-pane fade show active" id="test-results" role="tabpanel">
-            <div class="list-group shadow-sm">
+            <div class="list-group list-group-flush">
                 {% for result in recent_results %}
-                <div class="record-row list-group-item">
-                    <div class="record-info">
-                        <strong>{{ result.testName }}</strong>
-                        <p>{{ result.resultDate|date:"j M Y" }} &bull; {{ result.result }}</p>
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3 px-0 border-bottom">
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark">{{ result.testName }}</h6>
+                        <p class="mb-0 text-muted small">{{ result.resultDate|date:"j M Y" }} &bull; {{ result.result }}</p>
                     </div>
+                    <a href="{% url 'test_results' %}" class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3">View</a>
                 </div>
                 {% empty %}
-                <div class="p-4 text-center text-muted">No test results found.</div>
+                <div class="text-center text-muted py-5">
+                    <span class="fs-1 d-block mb-2">🗂️</span>
+                    No test results found on file.
+                </div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- Visit History -->
         <div class="tab-pane fade" id="visit-history" role="tabpanel">
-            <div class="list-group shadow-sm">
+            <div class="list-group list-group-flush">
                 {% for visit in recent_visits %}
-                <div class="record-row list-group-item">
-                    <div class="record-info">
-                        <strong>{{ visit.get_visitType_display }}</strong>
-                        <p>{{ visit.visitDate|date:"j M Y" }} &bull; Dr. {{ visit.doctorID.name }}</p>
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3 px-0 border-bottom">
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark">{{ visit.get_visitType_display }}</h6>
+                        <p class="mb-0 text-muted small">{{ visit.visitDate|date:"j M Y" }} &bull; Dr. {{ visit.doctorID.name }}</p>
                     </div>
-                    <div class="record-actions">
-                        <a href="{% url 'visit_history' %}" class="btn-view">View All</a>
-                    </div>
+                    <a href="{% url 'visit_history' %}" class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3">View</a>
                 </div>
                 {% empty %}
-                <div class="p-4 text-center text-muted">No visit history found.</div>
+                <div class="text-center text-muted py-5">No visit history found.</div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- Doctor's Notes -->
         <div class="tab-pane fade" id="doctors-notes" role="tabpanel">
-            <div class="list-group shadow-sm">
+            <div class="list-group list-group-flush">
                 {% for note in recent_notes %}
-                <div class="record-row list-group-item">
-                    <div class="record-info">
-                        <strong>Doctor's Note</strong>
-                        <p>{{ note.createdAt|date:"j M Y" }} &bull; {{ note.content|truncatechars:80 }}</p>
-                    </div>
+                <div class="list-group-item py-3 px-0 border-bottom">
+                    <h6 class="fw-bold mb-1 text-dark">Doctor's Note</h6>
+                    <p class="mb-2 text-muted small">{{ note.createdAt|date:"j M Y" }}</p>
+                    <p class="mb-0 text-secondary bg-light p-3 rounded-3">{{ note.content|truncatechars:120 }}</p>
                 </div>
                 {% empty %}
-                <div class="p-4 text-center text-muted">No doctor's notes found.</div>
+                <div class="text-center text-muted py-5">No doctor's notes found.</div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- Documents -->
         <div class="tab-pane fade" id="general-docs" role="tabpanel">
-            <div class="list-group shadow-sm">
+            <div class="list-group list-group-flush">
                 {% for doc in recent_documents %}
-                <div class="record-row list-group-item">
-                    <div class="record-info">
-                        <strong>{{ doc.get_documentType_display }}</strong>
-                        <p>Uploaded {{ doc.uploadedAt|date:"j M Y" }}</p>
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3 px-0 border-bottom">
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark">{{ doc.get_documentType_display }}</h6>
+                        <p class="mb-0 text-muted small">Uploaded {{ doc.uploadedAt|date:"j M Y" }}</p>
                     </div>
-                    <div class="record-actions">
-                        <a href="{{ doc.fileUrl }}" target="_blank" class="btn-view">View</a>
-                        <a href="{{ doc.fileUrl }}" download class="btn-download">↓ Download</a>
+                    <div class="d-flex gap-2">
+                        <a href="{{ doc.fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3">View</a>
+                        <a href="{{ doc.fileUrl }}" download class="btn btn-sm btn-light fw-bold rounded-pill px-3">↓</a>
                     </div>
                 </div>
                 {% empty %}
-                <div class="p-4 text-center text-muted">No documents found.</div>
+                <div class="text-center text-muted py-5">No documents found.</div>
                 {% endfor %}
             </div>
         </div>
 
     </div>
+
 </div>
 
+<script src="{% static 'js/searchbar.js' %}"></script>
 {% endblock %}
