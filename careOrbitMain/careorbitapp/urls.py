@@ -27,6 +27,8 @@ urlpatterns = [
 
     path("appointments/", views.appointments, name="appointments"),
     path("appointments/book/", views.book_appointment, name="book_appointment"),
+    path("appointments/available-slots/", views.get_available_slots, name="available_slots"),
+    path("appointments/cancel/", views.cancel_appointment, name="cancel_appointment"),
 
     path("dependents/", views.dependents, name="dependents"),
 

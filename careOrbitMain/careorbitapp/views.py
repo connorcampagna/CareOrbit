@@ -4,6 +4,7 @@ import json
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime,date
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.hashers import make_password, check_password
 from .models import User, Appointment,  Visit, TestResult, DoctorNote, Record, Medication
 
@@ -206,6 +207,7 @@ def medications(request):
 
     return render(request, "careorbit/medications.html", context)
 
+
 def medication_refill(request):
     patient = get_current_patient(request)
     if not patient:
@@ -240,12 +242,14 @@ def appointments(request):
 
     upcoming = Appointment.objects.filter(
         patientID=patient,
-        appointmentDate__gte=date.today()
+        appointmentDate__gte=date.today(),
+        status='booked'
     ).order_by('appointmentDate', 'appointmentTime')
 
     appointments_list = []
     for appt in upcoming:
         appointments_list.append({
+            "id": appt.appointmentID,
             "title": appt.appointmentReason,
             "date": appt.appointmentDate.strftime('%d %b %Y'),
             "time": appt.appointmentTime.strftime('%H:%M'),
@@ -259,6 +263,21 @@ def appointments(request):
         "appointments": appointments_list,
     }
     return render(request, "careorbit/appointments.html", context)
+
+
+def cancel_appointment(request):
+    if request.method == 'POST':
+        patient = get_current_patient(request)
+        try:
+            data = json.loads(request.body)
+            appt_id = data.get('appointment_id')
+            appt = Appointment.objects.get(appointmentID=appt_id, patientID=patient)
+            appt.delete()
+            return JsonResponse({'status': 'success'})
+        except Appointment.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Appointment doesnt exist'}, status=404)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 def book_appointment(request):
     patient = get_current_patient(request)
@@ -324,6 +343,24 @@ def book_appointment(request):
         return render(request, "careorbit/book.html", context)
 
     return render(request, "careorbit/book.html", context)
+
+
+def get_available_slots(request):
+    # Returns booked time slots for a given date and doctor (used by book.js AJAX)
+    selected_date = request.GET.get('date')
+    doctor_id = request.GET.get('doctor')
+
+    if not selected_date:
+        return JsonResponse({'booked_slots': []})
+
+    filters = {'appointmentDate': selected_date}
+    if doctor_id:
+        filters['doctorID'] = doctor_id
+
+    booked = Appointment.objects.filter(**filters).values_list('appointmentTime', flat=True)
+    booked_slots = [t.strftime('%H:%M') for t in booked if t]
+
+    return JsonResponse({'booked_slots': booked_slots})
 
 def dependents(request):
     user_id = request.session.get('user_id')

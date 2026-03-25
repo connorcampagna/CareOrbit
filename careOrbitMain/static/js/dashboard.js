@@ -1,4 +1,4 @@
-
+// all dashboard features
 
 document.addEventListener("DOMContentLoaded", function () {
 

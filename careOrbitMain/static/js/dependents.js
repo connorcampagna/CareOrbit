@@ -1,3 +1,4 @@
+// all dependent features 
 
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.querySelector('.add-dependent-form form');

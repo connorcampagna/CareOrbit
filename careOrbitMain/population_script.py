@@ -3,7 +3,6 @@ import sys
 import django
 from datetime import date, time, datetime
 
-# Setup Django environment
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'careOrbitConfigs.settings')
 django.setup()
@@ -316,6 +315,7 @@ def populate():
     )
 
 
+print("Use for username : testpatient@gmail.com and password : password123 :)")
 
 if __name__ == '__main__':
     populate()
