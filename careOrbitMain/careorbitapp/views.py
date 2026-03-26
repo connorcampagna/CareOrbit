@@ -128,6 +128,7 @@ def records(request):
     context = {
         "patient": patient,
         "dependents": dependents,
+        "view_for_id": view_for_id,
         "recent_results": recent_results,
         "recent_notes": recent_notes,
         "recent_documents": recent_documents,
