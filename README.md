@@ -14,10 +14,30 @@ Lama - Views and URLS <br>
 Amrita - Templates and CSS <br>
 Niccolo - Unit Tests and User Authentication 
 
-To populate DB run within careOrbitMain directory: 
 
-```
-python populate_script.py
-```
+### To Set Up DB
+
+1. **Navigate to the project directory:**
+   ```bash
+   cd careOrbitMain
+   ```
+
+2. **Apply database migrations:**
+   ```bash
+   python manage.py migrate
+   ```
+
+3. **Populate the database with test data:**
+   ```bash
+   python population_script.py
+   ```
+
+### Running CareOrbit Locally 
+
+1. **Start the development server:**
+   ```bash
+   python manage.py runserver
+   ```
+
 
 
