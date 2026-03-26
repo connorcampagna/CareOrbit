@@ -7,6 +7,8 @@ CareOrbit - Book Appointment
 
 {% block body_block %}
 <div class="container py-4">
+
+    {% csrf_token %}
     
     <div class="mb-4">
         <h2 class="fw-bold mb-1">Book an Appointment</h2>
