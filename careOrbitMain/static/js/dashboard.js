@@ -81,7 +81,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!data.medications || data.medications.length === 0) {
                 container.innerHTML = `
                 <div class="update-card update-success">
-                    <span class="update-icon">✅</span>
                     <div class="update-info">
                         <strong>All caught up!</strong>
                         <p>No pending medication refills.</p>
