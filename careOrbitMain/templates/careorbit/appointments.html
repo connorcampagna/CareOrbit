@@ -72,7 +72,7 @@ CareOrbit - Appointments
 
                         <div class="mt-4 d-flex gap-2">
                             <button class="btn btn-outline-primary px-4 fw-bold rounded-pill shadow-sm reschedule-btn"
-                                data-id="{{ appointment.appointmentID }}">
+                                data-id="{{ appointment.appointmentID }}" data-view-for="{{ view_for_id|default:'' }}">
                                 Reschedule
                             </button>
                             <button class="btn btn-outline-danger px-4 fw-bold rounded-pill shadow-sm cancel-btn"

@@ -13,7 +13,10 @@ document.addEventListener('DOMContentLoaded', function () {
             })
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
-                    if (data.status === 'success') window.location.href = '/appointments/book/';
+                    if (data.status === 'success') {
+                        const viewFor = btn.getAttribute('data-view-for');
+                        window.location.href = '/appointments/book/' + (viewFor ? '?view_for=' + viewFor : '');
+                    }
                 });
         });
     });

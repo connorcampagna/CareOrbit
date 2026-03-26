@@ -338,7 +338,8 @@ def appointments(request):
 
     context = {
         "patient": patient,
-        "dependents": dependents, 
+        "dependents": dependents,
+        "view_for_id": view_for_id,
         "appointments": appointments_list,
     }
     return render(request, "careorbit/appointments.html", context)
@@ -350,7 +351,9 @@ def cancel_appointment(request):
         try:
             data = json.loads(request.body)
             appt_id = data.get('appointment_id')
-            appt = Appointment.objects.get(appointmentID=appt_id, patientID=patient)
+            dependents = User.objects.filter(parentID=patient)
+            allowed_patients = list(dependents) + [patient]
+            appt = Appointment.objects.get(appointmentID=appt_id, patientID__in=allowed_patients)
             appt.delete()
             return JsonResponse({'status': 'success'})
         except Appointment.DoesNotExist:
@@ -371,6 +374,7 @@ def book_appointment(request):
         "patient": patient,
         "dependents": dependents,
         "doctors": doctors,
+        "view_for_id": request.GET.get('view_for', ''),
     }
 
     if request.method == 'POST':
