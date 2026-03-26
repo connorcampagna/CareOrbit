@@ -83,7 +83,7 @@ CareOrbit - Records
                 <div class="list-group-item d-flex justify-content-between align-items-center py-3 px-0 border-bottom">
                     <div>
                         <h6 class="fw-bold mb-1 text-dark">{{ visit.get_visitType_display }}</h6>
-                        <p class="mb-0 text-muted small">{{ visit.visitDate|date:"j M Y" }} &bull; Dr. {{ visit.doctorID.name }}</p>
+                        <p class="mb-0 text-muted small">{{ visit.visitDate|date:"j M Y" }} &bull; {{ visit.doctorID.name }}</p>
                     </div>
                     <a href="{% url 'visit_history' %}" class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3">View</a>
                 </div>
