@@ -45,7 +45,7 @@
                     <li class="nav-item dropdown ms-3">
                         <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle border-0 bg-transparent" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="bg-primary-subtle text-primary rounded-circle d-flex justify-content-center align-items-center shadow-sm transition-all" style="width: 45px; height: 45px;">
-                                <span class="fs-5 fw-bold">{% if patient %}{{ patient.name|first|upper }}{% else %}👤{% endif %}</span>
+                                <span class="fs-5 fw-bold">{% if patient %}{{ patient.name|first|upper }}{% else %}{% endif %}</span>
                             </div>
                         </a>
                         
